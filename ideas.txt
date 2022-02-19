@@ -1,0 +1,37 @@
+*** order of the flags in the html tags, http://netcode.ru/dotnet/?lang=&katID=30&skatID=275&artID=7598, https://hord.ca/projects/deogol/intro.html
+
+https://www.ijedr.org/papers/IJEDR1402108.pdf,
+*** modify spaces at the start and end of the tags
+*** Use "" or '' or nothing (bgcolor="gray", bgcolor='gray', bgcolor=gray)
+modify capital letters (some attributes are case sensitive as <A HREF="link.html">), also being careful with non letter tags <h2>
+
+https://www.ijert.org/research/data-hiding-in-web-pages-IJERTCONV5IS10009.pdf
+Representation of empty elements (<frame></ frame> ... 0
+                                  < frame/> ... 1)
+Repeat attributes
+Stego key:
+<td width=”200”> ....1
+<td width”200” width=”200”> ....0
+
+cuando haces la peticion post se te devuelve a otro lado, por ejemplo al contact form
+
+
+
+STEGO TOOL
+combine all
+one of them or multiple of them select the order of the others to be used
+- Repeat attributes and capital letters in only one tag can encode information on
+how to deordered the message
+Others can be used to get a key
+and finally both of keys and order to get information in the biggest one in some way
+
+Todos los tags deben de estar en orden alfabético utilizando la primera letra
+
+Basar en alguna estadísitica, en vez de mapear los bits a mayúsculas, mapear la cantidad de mayúsuculas en x líneas a un número que se corresponda con una letra en ASCII
+
+
+ENLACES
+https://www.ijedr.org/papers/IJEDR1402108.pdf
+https://www.ijert.org/research/data-hiding-in-web-pages-IJERTCONV5IS10009.pdf
+http://netcode.ru/dotnet/?lang=&katID=30&skatID=275&artID=7598
+https://hord.ca/projects/deogol/intro.html
