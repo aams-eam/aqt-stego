@@ -4,7 +4,6 @@ from pprint import pprint
 from bs4 import BeautifulSoup
 
 
-
 def get_attributes(content):
 
     fatt = None
@@ -19,7 +18,6 @@ def get_attributes(content):
     soup = BeautifulSoup(content, 'html.parser')
     # [tag.attrs for tag in soup.findAll('a')]
     try:
-        print(soup.find_all()[0])
         fatt = soup.find_all()[0].attrs
         if(len(fatt)==0):
             fatt = None
@@ -82,7 +80,7 @@ def max_bits_line(line):
 
 
 
-def encode_line(line):
+def encode_line(line, bits):
 
     maxlines = 0
     enc = None
@@ -93,6 +91,15 @@ def encode_line(line):
 
         att = get_attributes(content)
         print(att)
+
+        # order dictionary in base of created algorithm
+
+        # apply algorithm to encode bits
+
+        # now you have specific order in the attributes
+        # take original attributes and get first and last word
+        # search in the original string "line" and create new string
+        # with new ordenated attributes
 
     return line
 
@@ -166,11 +173,16 @@ def main():
     newhtml = []
 
     for t,o in zip(test, output):
+        print(t)
         # see how many bits can you encode in the line
         num_bits = max_bits_line(t)
+        # take first num_bits from the message
+        bits = None # TEMP***
         # encode those x bits in the line
-        newline = encode_line(t)
+        newline = encode_line(t, bits)
         newhtml.append(newline)
+
+        print()
 
     htmlString = "\n".join(newhtml)
 
@@ -196,6 +208,8 @@ def test_bits_total():
         bits += max_bits_line(line)
 
     print("Total Bits to embed:\t", bits, "\n")
+
+
 
 
 
