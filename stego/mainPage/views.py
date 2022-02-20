@@ -6,7 +6,7 @@ import os
 
 # FUNCTIONS
 def writetofile(content, filedir):
-    f = open(os.getcwd()+filedir, 'w')
+    f = open(os.getcwd()+'/'+filedir, 'w')
     testfile = File(f)
     testfile.write(content)
     testfile.close
@@ -30,15 +30,9 @@ def home(request):
     print()
     print()
 
-    writetofile(response.content.decode(response.charset), "responseContent.html")
+    # writetofile(response.content.decode(response.charset), "responseContent.html")
 
     # with open("responseContent.html", 'w') as fd:
     #     fd.write(response.content.decode(response.charset))
 
     return response
-
-
-
-from django.http import HttpResponse
-
-# Create your views here.
