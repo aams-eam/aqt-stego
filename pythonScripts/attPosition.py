@@ -72,7 +72,8 @@ def max_bits_line(line):
     num_bits = 0
     num_att = num_attributes_line(line)
 
-    # apply log base 2 to (line!)
+    # TEMP*** apply log base 2 to (line!)
+    # TEMP*** then create new algorithm in encode_line() func
     if(num_att > 1):
         num_bits = num_att-1
 
@@ -90,52 +91,45 @@ def encode_line(line, bits):
     if(isclean):
 
         att = get_attributes(content)
-        print(att)
+        att = {'href': '/static/vendor/owl.carousel/assets/owl.carousel.min.css', "data-spy": "scroll", "data-target": "#navbar-example", 'rel': ['stylesheet']}
 
         # ORDER DICTIONARY TAKING INTO ACCOUNT THE PROPOSED ALGORITHM
-        # crete dict with keys the position and for values the key of the attribute
-        tosort = {}
-        cont = 0
-        for v in att.keys():
-            tosort[cont] = v
-            cont += 1
+        def sort_att_trasnformation(d):
 
-        print(tosort)
-
-        # take transformation to attributes
-        for k,v in tosort.items():
             # sorted value
             sv = []
-            sv[:] = v # separate into list of characters
+            sv[:] = d # separate into list of characters
             sv.sort() # sort alphabetically
             sv.append(sv[0]) # put first char at the end
             del sv[0] # delete first char so second char is the first
             sv = ''.join(sv) # recreate string from the list
-            tosort[k] = sv # change the value to the transformed value
+            return sv
 
-        print(tosort)
-        # sort alphabetically inverse the values
-        att_sorted = {entry[0]:entry[1] for entry in sorted(tosort.items(), key = lambda x: x[1], reverse=True)}
+        # This is the dictionary base to encode
+        att_sorted = {entry[0]:entry[1] for entry in sorted(att.items(),
+                        key = lambda x: sort_att_trasnformation(x[0]), reverse=True)}
+
+        print(att)
         print(att_sorted)
 
+        message = [1, 0, 0, 1, 0, 1]
         # apply algorithm to encode bits
+        i = 0
+        for m in message:
 
-        # now you have specific order in the attributes
+            print(m)
+            if(m==0):
+                # swap dict (att_sorted) index (i) with (i+1)
+            i += 1
+
+
+        # now you have attributes encoded
         # take original attributes and get first and last word
         # search in the original string "line" and create new string
         # with new ordenated attributes
 
     return line
 
-# sv = []
-# sv[:] = "asljflajsf"
-# sv.sort()
-# print(sv)
-# sv.append(sv[0])
-# del sv[0]
-# print(sv)
-# sv = ''.join(sv)
-# print(sv)
 
 test = [
     "          <link href=\"/static/vendor/owl.carousel/assets/owl.carousel.min.css\" rel=\"stylesheet\">       ", # 2
