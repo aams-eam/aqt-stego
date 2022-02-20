@@ -83,7 +83,6 @@ def max_bits_line(line):
 
 
 def encode_line(line):
-    print(line)
 
     maxlines = 0
     enc = None
@@ -164,9 +163,16 @@ output = [
 
 def main():
 
-    for t,o in zip(test, output):
-        encode_line(t)
+    newhtml = []
 
+    for t,o in zip(test, output):
+        # see how many bits can you encode in the line
+        num_bits = max_bits_line(t)
+        # encode those x bits in the line
+        newline = encode_line(t)
+        newhtml.append(newline)
+
+    htmlString = "\n".join(newhtml)
 
 
 
