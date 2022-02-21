@@ -81,7 +81,7 @@ def max_bits_line(line):
 
 
 
-def encode_line(line, bits):
+def encode_line(line, mbits):
 
     maxlines = 0
     enc = None
@@ -91,7 +91,7 @@ def encode_line(line, bits):
     if(isclean):
 
         att = get_attributes(content)
-        att = {'href': '/static/vendor/owl.carousel/assets/owl.carousel.min.css', "data-spy": "scroll", "data-target": "#navbar-example", 'rel': ['stylesheet']}
+        print(att)
 
         # ORDER DICTIONARY TAKING INTO ACCOUNT THE PROPOSED ALGORITHM
         def sort_att_trasnformation(d):
@@ -106,27 +106,30 @@ def encode_line(line, bits):
             return sv
 
         # This is the dictionary base to encode
-        att_sorted = {entry[0]:entry[1] for entry in sorted(att.items(),
-                        key = lambda x: sort_att_trasnformation(x[0]), reverse=True)}
+        att_sorted = sorted(att.items(),
+                        key = lambda x: sort_att_trasnformation(x[0]), reverse=True)
 
-        print(att)
+
         print(att_sorted)
 
-        message = [1, 0, 0, 1, 0, 1]
+
         # apply algorithm to encode bits
+        print(mbits)
         i = 0
-        for m in message:
+        for m in mbits:
 
             print(m)
-            if(m==0):
-                # swap dict (att_sorted) index (i) with (i+1)
+            if(m=="0"):
+                att_sorted[i+1], att_sorted[i] = att_sorted[i], att_sorted[i+1]
             i += 1
 
+        print(att_sorted)
 
         # now you have attributes encoded
         # take original attributes and get first and last word
         # search in the original string "line" and create new string
         # with new ordenated attributes
+        print(line)
 
     return line
 
@@ -198,18 +201,35 @@ output = [
 def main():
 
     newhtml = []
+    # take first num_bits from the message
+    message = "Mensaje a codificar"
+    # convert message in list of bytes
+    byte_list = [bin(byte)[2:].zfill(8) for byte in bytearray(message, "utf8")]
+    # conver list of bytes in list of bits
+    mbits = [bit for byte in byte_list for bit in byte]
+
 
     for t,o in zip(test, output):
-        print(t)
+        # TEMP*** DELETE
+        t = '                 < iframe src="htt4452" width="100%" height="380" frameborder="0" style="border:0" allowfullscreen >   '
+        o = 6
+        # TEMP*** DELETE
+
+
+        newline = []
         # see how many bits can you encode in the line
         num_bits = max_bits_line(t)
-        # take first num_bits from the message
-        bits = None # TEMP***
-        # encode those x bits in the line
-        newline = encode_line(t, bits)
-        newhtml.append(newline)
+        print("num_bits:", num_bits)
 
-        print()
+        if(num_bits > 0):
+            mbits_part = mbits[0:num_bits]
+            del mbits[0:num_bits]
+            # encode those x bits in the line
+            newline = encode_line(t, mbits_part)
+            newhtml.append(newline)
+        else:
+            newhtml.append(newline)
+
         break; # TEMP***
 
     htmlString = "\n".join(newhtml)
