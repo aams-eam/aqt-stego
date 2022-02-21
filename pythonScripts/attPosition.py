@@ -142,7 +142,7 @@ def encode_line(line, mbits):
 
             if(not a[1]==''):
 
-                if(line[line.find(a[1])-1]=="\""): # to mantain original quotes
+                if(line[line.find(a[0])+len(a[0])+1]=="\""): # to mantain original quotes
                     attpart.append(a[0]+"=\""+a[1]+"\"")
                 else:
                     attpart.append(a[0]+"='"+a[1]+"'")
@@ -155,6 +155,59 @@ def encode_line(line, mbits):
         return firstpart+attpart+secondpart
 
     return line
+
+
+
+def decode_line(line):
+
+    # final message
+    #message = ['0', '1', '1', '1', '0']
+
+    bits = None
+
+    # line = '< iframe style="border:0" src=\'algo\' width="100%" height="380" frameborder=\'0\' allowfullscreen >'
+
+
+    isclean, content = get_clean_tag(line)
+
+    if(isclean):
+
+        att = get_attributes(content) # attributes in a dict
+
+        if(not att==None):
+
+
+            # ORDER DICTIONARY TAKING INTO ACCOUNT THE PROPOSED ALGORITHM
+            def sort_att_trasnformation(d):
+
+                # sorted value
+                sv = []
+                sv[:] = d # separate into list of characters
+                sv.sort() # sort alphabetically
+                sv.append(sv[0]) # put first char at the end
+                del sv[0] # delete first char so second char is the first
+                sv = ''.join(sv) # recreate string from the list
+                return sv
+
+            # This is the dictionary base to encode
+            keys_sorted = sorted(att.keys(),
+                            key = lambda x: sort_att_trasnformation(x), reverse=True)[::-1]
+
+
+            # compare att_sorted with att
+            attkeys = list(att.keys())[::-1]
+            bits = []
+            for i in range(len(attkeys)-1):
+                if(attkeys[i]==keys_sorted[i]):
+                    bits.append("1")
+                else:
+                    bits.append("0")
+                    attkeys[i], attkeys[i+1] = attkeys[i+1], attkeys[i]
+
+            bits = bits[::-1]
+
+    return bits
+
 
 
 test = [
@@ -174,10 +227,10 @@ test = [
     "<!-- ======= Slider Section ======= -- >",
     "< !-- ======= Slider Section ======= -->",
     "< !-- ======= Slider Section ======= -- >",
-    '<iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d22864.11283411948!2d-73.96468908098944!3d40.630720240038435!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x89c24fa5d33f083b%3A0xc80b8f06e177fe62!2sNew+York%2C+NY%2C+USA!5e0!3m2!1sen!2sbg!4v1540447494452" width="100%" height="380" frameborder="0" style="border:0" allowfullscreen>',
-    '< iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d22864.11283411948!2d-73.96468908098944!3d40.630720240038435!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x89c24fa5d33f083b%3A0xc80b8f06e177fe62!2sNew+York%2C+NY%2C+USA!5e0!3m2!1sen!2sbg!4v1540447494452" width="100%" height="380" frameborder="0" style="border:0" allowfullscreen>',
-    '<iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d22864.11283411948!2d-73.96468908098944!3d40.630720240038435!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x89c24fa5d33f083b%3A0xc80b8f06e177fe62!2sNew+York%2C+NY%2C+USA!5e0!3m2!1sen!2sbg!4v1540447494452" width="100%" height="380" frameborder="0" style="border:0" allowfullscreen >',
-    '< iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d22864.11283411948!2d-73.96468908098944!3d40.630720240038435!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x89c24fa5d33f083b%3A0xc80b8f06e177fe62!2sNew+York%2C+NY%2C+USA!5e0!3m2!1sen!2sbg!4v1540447494452" width="100%" height="380" frameborder="0" style="border:0" allowfullscreen >',
+    '<iframe src="http://longurl" width="100%" height="380" frameborder="0" style="border:0" allowfullscreen>',
+    '< iframe src="http://longurl" width="100%" height="380" frameborder="0" style="border:0" allowfullscreen>',
+    '<iframe src="http://longurl" width="100%" height="380" frameborder="0" style="border:0" allowfullscreen >',
+    '< iframe src="http://longurl" width="100%" height="380" frameborder="0" style="border:0" allowfullscreen >',
     '<!DOCTYPE html>',
     '< !DOCTYPE html>',
     '<!DOCTYPE html >',
@@ -232,14 +285,20 @@ def main():
     mbits = [bit for byte in byte_list for bit in byte]
 
 
+    # TEMP***
+    mbits = ['0', '1', '0', '0', '1', '1', '0', '1', '0', '1', '1', '0', '0', '1', '0', '1', '0', '1', '1', '0']
+    # TEMP***
+
+    probe = mbits.copy()
+    print("ENCODING")
+    print("objective:\t" + str(mbits))
     for t,o in zip(test, output):
 
         newline = []
         # see how many bits can you encode in the line
         num_bits = max_bits_line(t)
-        print(t, num_bits)
 
-        if(num_bits > 0):
+        if(num_bits > 0 and len(mbits)>0):
             mbits_part = mbits[0:num_bits]
             del mbits[0:num_bits]
             # encode those x bits in the line
@@ -249,13 +308,21 @@ def main():
 
         newhtml.append(newline)
 
-        print(newline)
-        assert(len(newline)==len(t))
-
-        print()
-
     htmlString = "\n".join(newhtml)
-    print(htmlString)
+
+
+    # DECODIFICATION
+    print("DECODING")
+    totalbits = []
+    for line in newhtml:
+        bits_part = decode_line(line)
+        if(not bits_part==None):
+            totalbits = totalbits + bits_part
+
+
+    print("result:\t\t" +str(totalbits[:len(probe)]))
+    assert(probe==totalbits[:len(probe)])
+
 
 
 
