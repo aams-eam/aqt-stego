@@ -284,11 +284,6 @@ def main():
     # conver list of bytes in list of bits
     mbits = [bit for byte in byte_list for bit in byte]
 
-
-    # TEMP***
-    mbits = ['0', '1', '0', '0', '1', '1', '0', '1', '0', '1', '1', '0', '0', '1', '0', '1', '0', '1', '1', '0']
-    # TEMP***
-
     probe = mbits.copy()
     print("ENCODING")
     print("objective:\t" + str(mbits))
@@ -320,8 +315,12 @@ def main():
             totalbits = totalbits + bits_part
 
 
-    print("result:\t\t" +str(totalbits[:len(probe)]))
-    assert(probe==totalbits[:len(probe)])
+    # ASSERTION
+    mincapacity = len(probe)
+    if(len(totalbits) < mincapacity):
+        mincapacity = len(totalbits)
+    print("result:\t\t" +str(totalbits[:mincapacity]))
+    assert(probe[:mincapacity]==totalbits[:mincapacity])
 
 
 

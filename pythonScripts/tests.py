@@ -32,7 +32,7 @@ byte_list = [bin(byte)[2:].zfill(8) for byte in bytearray(message, "utf8")]
 mbits = [bit for byte in byte_list for bit in byte]
 print(mbits)
 
-print(len(['0', '1', '0', '0', '1', '1', '0', '1', '0', '1', '1', '0', '0', '1', '0', '1', '0', '1', '1']))
+print(len(['0', '1', '0', '0', '1', '1', '0', '1', '0', '1', '1', '0', '0', '1', '0', '1', '0', '1', '1', '1', '0', '1', '1', '0', '0', '1', '0', '1', '0', '1', '1', '1']))
 output = [
     2,
     2,
@@ -58,9 +58,9 @@ output = [
     0,
     0,
     0,
-    2,
-    2,
-    2,
-    2,
+    3,
+    3,
+    3,
+    3,
 ]
 print(sum(output))
