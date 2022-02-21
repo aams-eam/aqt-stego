@@ -90,8 +90,15 @@ def encode_line(line, mbits):
 
     if(isclean):
 
-        att = get_attributes(content)
-        print(att)
+        attd = get_attributes(content) # attributes in a dict
+        # if there is a list in values join it with space
+        att = {}
+        for entry in attd.items():
+            if(type(entry[1])==list):
+                att[entry[0]] = " ".join(entry[1])
+            else:
+                att[entry[0]] = entry[1]
+
 
         # ORDER DICTIONARY TAKING INTO ACCOUNT THE PROPOSED ALGORITHM
         def sort_att_trasnformation(d):
@@ -110,26 +117,42 @@ def encode_line(line, mbits):
                         key = lambda x: sort_att_trasnformation(x[0]), reverse=True)
 
 
-        print(att_sorted)
-
-
         # apply algorithm to encode bits
-        print(mbits)
         i = 0
         for m in mbits:
 
-            print(m)
             if(m=="0"):
                 att_sorted[i+1], att_sorted[i] = att_sorted[i], att_sorted[i+1]
             i += 1
 
-        print(att_sorted)
+        # create a new line with the sorted attributes
+        # the complexity is added if it is tried to mantain the spaces
+        # and the quotes if "" or ''
+        keylist = list(att.keys())
+        firstpart = line[0:line.find(keylist[0])]
+        pos = line.find(" >")
+        if(pos>=0):
+            secondpart=line[pos:]
+        else:
+            pos = line.find(">")
+            secondpart = line[pos:]
 
-        # now you have attributes encoded
-        # take original attributes and get first and last word
-        # search in the original string "line" and create new string
-        # with new ordenated attributes
-        print(line)
+        attpart = []
+        for a in att_sorted:
+
+            if(not a[1]==''):
+
+                if(line[line.find(a[1])-1]=="\""): # to mantain original quotes
+                    attpart.append(a[0]+"=\""+a[1]+"\"")
+                else:
+                    attpart.append(a[0]+"='"+a[1]+"'")
+
+            else:
+                attpart.append(a[0])
+
+
+        attpart = " ".join(attpart)
+        return firstpart+attpart+secondpart
 
     return line
 
@@ -210,29 +233,29 @@ def main():
 
 
     for t,o in zip(test, output):
-        # TEMP*** DELETE
-        t = '                 < iframe src="htt4452" width="100%" height="380" frameborder="0" style="border:0" allowfullscreen >   '
-        o = 6
-        # TEMP*** DELETE
-
 
         newline = []
         # see how many bits can you encode in the line
         num_bits = max_bits_line(t)
-        print("num_bits:", num_bits)
+        print(t, num_bits)
 
         if(num_bits > 0):
             mbits_part = mbits[0:num_bits]
             del mbits[0:num_bits]
             # encode those x bits in the line
             newline = encode_line(t, mbits_part)
-            newhtml.append(newline)
         else:
-            newhtml.append(newline)
+            newline = t
 
-        break; # TEMP***
+        newhtml.append(newline)
+
+        print(newline)
+        assert(len(newline)==len(t))
+
+        print()
 
     htmlString = "\n".join(newhtml)
+    print(htmlString)
 
 
 

@@ -12,3 +12,12 @@ del res[0:num_bits]
 print(res)
 print()
 print(mbits_part)
+
+
+
+att_sorted = [('style', 'border:0'), ('src', 'htt4452'), ('height', '380'), ('allowfullscreen', ''), ('width', '100%'), ('frameborder', '0')]
+temp = att_sorted[3][1]
+print(temp=='')
+
+x = "stringraro jeje"
+print(y)
