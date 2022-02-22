@@ -19,16 +19,13 @@ def home(request):
 
     # CODE INDEX MANIPULATION
 
+    if request.method == 'GET':
+        return render(request, 'mainPage/indexExpanded.html')
+    else:
 
-    response =  render(request, 'mainPage/indexExpanded.html')
-
-    print()
-    print()
-    print()
-    print("comment  ")
-    print()
-    print()
-    print()
+        response =  render(request, 'mainPage/indexExpanded.html')
+        print(type(response), response)
+        return HttpResponse("") # return modified page
 
     # writetofile(response.content.decode(response.charset), "responseContent.html")
 
