@@ -67,10 +67,9 @@ def num_attributes_line(line):
 
 
 
-def max_bits_line(line):
+def num_att2bits(num_att):
 
     num_bits = 0
-    num_att = num_attributes_line(line)
 
     # TEMP*** apply log base 2 to (line!)
     # TEMP*** then create new algorithm in encode_line() func
@@ -78,6 +77,15 @@ def max_bits_line(line):
         num_bits = num_att-1
 
     return num_bits
+
+
+
+def max_bits_line(line):
+
+    num_bits = 0
+    num_att = num_attributes_line(line)
+
+    return num_att2bits(num_att)
 
 
 
@@ -92,67 +100,83 @@ def encode_line(line, mbits):
 
         attd = get_attributes(content) # attributes in a dict
         # if there is a list in values join it with space
-        att = {}
-        for entry in attd.items():
-            if(type(entry[1])==list):
-                att[entry[0]] = " ".join(entry[1])
-            else:
-                att[entry[0]] = entry[1]
 
-
-        # ORDER DICTIONARY TAKING INTO ACCOUNT THE PROPOSED ALGORITHM
-        def sort_att_trasnformation(d):
-
-            # sorted value
-            sv = []
-            sv[:] = d # separate into list of characters
-            sv.sort() # sort alphabetically
-            sv.append(sv[0]) # put first char at the end
-            del sv[0] # delete first char so second char is the first
-            sv = ''.join(sv) # recreate string from the list
-            return sv
-
-        # This is the dictionary base to encode
-        att_sorted = sorted(att.items(),
-                        key = lambda x: sort_att_trasnformation(x[0]), reverse=True)
-
-
-        # apply algorithm to encode bits
-        i = 0
-        for m in mbits:
-
-            if(m=="0"):
-                att_sorted[i+1], att_sorted[i] = att_sorted[i], att_sorted[i+1]
-            i += 1
-
-        # create a new line with the sorted attributes
-        # the complexity is added if it is tried to mantain the spaces
-        # and the quotes if "" or ''
-        keylist = list(att.keys())
-        firstpart = line[0:line.find(keylist[0])]
-        pos = line.find(" >")
-        if(pos>=0):
-            secondpart=line[pos:]
-        else:
-            pos = line.find(">")
-            secondpart = line[pos:]
-
-        attpart = []
-        for a in att_sorted:
-
-            if(not a[1]==''):
-
-                if(line[line.find(a[0])+len(a[0])+1]=="\""): # to mantain original quotes
-                    attpart.append(a[0]+"=\""+a[1]+"\"")
+        if(attd is not None):
+            att = {}
+            for entry in attd.items():
+                if(type(entry[1])==list):
+                    att[entry[0]] = " ".join(entry[1])
                 else:
-                    attpart.append(a[0]+"='"+a[1]+"'")
+                    att[entry[0]] = entry[1]
 
+
+            # get number of bits that can be encoded
+            if(att is not None):
+                num_bits = num_att2bits(len(att))
+        else:
+            num_bits = 0
+
+
+        if((num_bits > 0) and (len(mbits) > 0)):
+
+            # get part of the message
+            mbits_part = mbits[:num_bits]
+            del mbits[:num_bits]
+
+
+            # ORDER DICTIONARY TAKING INTO ACCOUNT THE PROPOSED ALGORITHM
+            def sort_att_trasnformation(d):
+
+                # sorted value
+                sv = []
+                sv[:] = d # separate into list of characters
+                sv.sort() # sort alphabetically
+                sv.append(sv[0]) # put first char at the end
+                del sv[0] # delete first char so second char is the first
+                sv = ''.join(sv) # recreate string from the list
+                return sv
+
+            # This is the dictionary base to encode
+            att_sorted = sorted(att.items(),
+                            key = lambda x: sort_att_trasnformation(x[0]), reverse=True)
+
+
+            # apply algorithm to encode bits
+            i = 0
+            for m in mbits_part:
+
+                if(m=="0"):
+                    att_sorted[i+1], att_sorted[i] = att_sorted[i], att_sorted[i+1]
+                i += 1
+
+            # create a new line with the sorted attributes
+            # the complexity is added if it is tried to mantain the spaces
+            # and the quotes if "" or ''
+            keylist = list(att.keys())
+            firstpart = line[0:line.find(keylist[0])]
+            pos = line.find(" >")
+            if(pos>=0):
+                secondpart=line[pos:]
             else:
-                attpart.append(a[0])
+                pos = line.find(">")
+                secondpart = line[pos:]
+
+            attpart = []
+            for a in att_sorted:
+
+                if(not a[1]==''):
+
+                    if(line[line.find(a[0])+len(a[0])+1]=="\""): # to mantain original quotes
+                        attpart.append(a[0]+"=\""+a[1]+"\"")
+                    else:
+                        attpart.append(a[0]+"='"+a[1]+"'")
+
+                else:
+                    attpart.append(a[0])
 
 
-        attpart = " ".join(attpart)
-        return firstpart+attpart+secondpart
+            attpart = " ".join(attpart)
+            return firstpart+attpart+secondpart
 
     return line
 
@@ -160,13 +184,7 @@ def encode_line(line, mbits):
 
 def decode_line(line):
 
-    # final message
-    #message = ['0', '1', '1', '1', '0']
-
     bits = None
-
-    # line = '< iframe style="border:0" src=\'algo\' width="100%" height="380" frameborder=\'0\' allowfullscreen >'
-
 
     isclean, content = get_clean_tag(line)
 
@@ -283,30 +301,20 @@ def main():
     byte_list = [bin(byte)[2:].zfill(8) for byte in bytearray(message, "utf8")]
     # conver list of bytes in list of bits
     mbits = [bit for byte in byte_list for bit in byte]
+    probe = mbits.copy() # To compare the result after Encoding and Decoding
 
-    probe = mbits.copy()
+    # ENCODING
     print("ENCODING")
     print("objective:\t" + str(mbits))
     for t,o in zip(test, output):
 
-        newline = []
-        # see how many bits can you encode in the line
-        num_bits = max_bits_line(t)
-
-        if(num_bits > 0 and len(mbits)>0):
-            mbits_part = mbits[0:num_bits]
-            del mbits[0:num_bits]
-            # encode those x bits in the line
-            newline = encode_line(t, mbits_part)
-        else:
-            newline = t
-
+        newline = encode_line(t, mbits)
         newhtml.append(newline)
 
     htmlString = "\n".join(newhtml)
 
 
-    # DECODIFICATION
+    # DECODING
     print("DECODING")
     totalbits = []
     for line in newhtml:
