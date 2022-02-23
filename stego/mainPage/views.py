@@ -3,6 +3,7 @@ from django.http import HttpResponse
 from django.core.files import File
 from django.views.decorators.csrf import csrf_exempt
 import os
+from .attPosition import encode_line
 from .attPosition import total_capacity
 
 
@@ -37,7 +38,7 @@ def falseShop(request):
 
         # see if it exists parameter pass and compare with tpass
         rpass = request.GET.get('pass', None)
-        if(rpass is not None):
+        if((rpass is not None) and (tpass is not None)):
             if(tpass==rpass): # message has been stored with that password
                 # Return modified page
                 htmlresponse = render(request, 'mainPage/indexExpanded.html')
@@ -53,48 +54,79 @@ def falseShop(request):
         msg = request.POST.get('msg', None)
 
         # see if pass and msg are not None
-        if((rpass is not None) and (msg is not None or '')):
+        if((rpass is None) or (msg is None or '')):
+            return render(request, 'mainPage/indexExpanded.html')
+        else:
             tpass = rpass
 
-            # get base html
-            htmlresponse = render(request, 'mainPage/indexExpanded.html')
-            actualhtml = htmlresponse.content.decode("utf-8")
+
+        # GET BASE HTML
+        htmlresponse = render(request, 'mainPage/indexExpanded.html')
+        actualhtml = htmlresponse.content.decode("utf-8")
 
 
-            # MODIFY THE HTML
-            newhtml = []
-            # convert message in list of bytes
-            byte_list = [bin(byte)[2:].zfill(8) for byte in bytearray(msg, "utf8")]
-            # conver list of bytes in list of bits
-            mbits = [bit for byte in byte_list for bit in byte]
+        # GETTING MAC CAPACITY AND
+        # See if the message fits in the capacity of the html
+        maxbits = total_capacity(actualhtml) # Total capacity
+        # TEMP*** In this case the bits used for
+        # describing the length are the ones necessary for the full capacity length
+        basebits_of_len = len("{0:b}".format(maxbits))
+        # TEMP***
 
 
-            # Cipher the message
+        # CONFIGURATION PARAMETERS
+        try:
+            bits_of_len = int(request.POST.get('bitlen', basebits_of_len))
+        except ValueError:
+            bits_of_len = basebits_of_len
 
-            # How to separate the message to encode it
-            maxbits = total_capacity(actualhtml) # Total capacity
-            # see that total capacity is higher than len of the message
-            # two bytes of length and two x bytes for random key
-            if(len(mbits) + 16 <  maxbits):
+        try:
+            bits_of_key = int(request.POST.get('keylen', 16))
+        except ValueError:
+            bits_of_key = 16
 
-                # ENCODING
-                print("ENCODING")
-                for line in actualhtml.splitlines():
+        try:
+            redundancy = int(request.POST.get('redundancy', 1))
+        except ValueError:
+            redundancy = 1
 
-                    newline = encode_line(line, mbits)
-                    newhtml.append(newline)
-                # MODIFY THE HTML
 
-                # Store the new html in temporary variable modifiedhtml
-                modifiedhtml = "\n".join(newhtml)
 
+        if((len(msg)*8 + bits_of_len + bits_of_key)*redundancy >  maxbits):
+            return render(request, 'mainPage/indexExpanded.html')
+
+
+
+
+        # MODIFY THE HTML
+        newhtml = []
+        # convert message in list of bytes
+        byte_list = [bin(byte)[2:].zfill(8) for byte in bytearray(msg, "utf8")]
+        # conver list of bytes in list of bits
+        mbits = [bit for byte in byte_list for bit in byte]
+
+        # HOW TO SEPARATE THE MESSAGE TO ENCODE IT
+        # PUT IT AS MANY TYPES WITH CERTAIN SEPARATION OR WHAT?
+        mlength = list("{0:b}".format(len(mbits)).zfill(bits_of_len))
+        print(mlength)
+        key = [] # TEMP *** KEY FOR CIPHERING # known length for the receiver # MAYBE CIPHER ONLY THE KEY WITH PUBLIC CRYPTOGRAPHY
+        encriptedm = mbits # TEMP *** CIPHER THE MESSAGE
+        init = [] # TEMP*** initial message that identifies the start of a message
+        # FINAL PAYLOAD
+        payload = init + mlength + key + mbits
+
+        print(payload)
+
+
+        # ENCODING
+        print("ENCODING")
+        for line in actualhtml.splitlines():
+
+            newline = encode_line(line, payload)
+            newhtml.append(newline)
+        # MODIFY THE HTML
+
+        # Store the new html in temporary variable modifiedhtml
+        modifiedhtml = "\n".join(newhtml)
 
         return render(request, 'mainPage/indexExpanded.html')
-
-
-    # writetofile(response.content.decode(response.charset), "responseContent.html")
-
-    # with open("responseContent.html", 'w') as fd:
-    #     fd.write(response.content.decode(response.charset))
-
-    return response
