@@ -23,13 +23,6 @@ def home(request):
     return render(request, 'mainPage/indexExpanded.html')
 
 
-# temporal password, in an ideal way, this will be a database
-# of hashed passwords and modified htmls
-# mutex should be used here
-tpass = None
-modifiedhtml = None
-
-
 @csrf_exempt
 def falseShop(request):
 
@@ -38,14 +31,24 @@ def falseShop(request):
 
         # see if it exists parameter pass and compare with tpass
         rpass = request.GET.get('pass', None)
-        if((rpass is not None) and (tpass is not None)):
-            if(tpass==rpass): # message has been stored with that password
-                # Return modified page
-                htmlresponse = render(request, 'mainPage/indexExpanded.html')
-                htmlresponse.content = modifiedhtml
-                return htmlresponse
+        if(rpass is not None):
+            # buscar un archivo con nombre pass.html
+            # si no existe devolver lo otro, si existe devolverlo
 
-        return render(request, 'mainPage/indexExpanded.html')
+            try:
+                with open(rpass+".html", 'r') as fd:
+                    modifiedhtml = fd.read()
+                    print(modifiedhtml)
+
+                    # Return modified page
+                    htmlresponse = render(request, 'mainPage/indexExpanded.html')
+                    htmlresponse.content = modifiedhtml
+
+                    # TEMP*** remove the file
+                    return htmlresponse
+
+            except FileNotFoundError:
+                return render(request, 'mainPage/indexExpanded.html')
 
     else:
 
@@ -68,6 +71,7 @@ def falseShop(request):
         # GETTING MAC CAPACITY AND
         # See if the message fits in the capacity of the html
         maxbits = total_capacity(actualhtml) # Total capacity
+        print("MAXBITS:", maxbits)
         # TEMP*** In this case the bits used for
         # describing the length are the ones necessary for the full capacity length
         basebits_of_len = len("{0:b}".format(maxbits))
@@ -126,7 +130,10 @@ def falseShop(request):
             newhtml.append(newline)
         # MODIFY THE HTML
 
-        # Store the new html in temporary variable modifiedhtml
+        # Store the new html in file with name of the pass
         modifiedhtml = "\n".join(newhtml)
+
+        with open(rpass+".html", 'w') as fd:
+            fd.write(modifiedhtml)
 
         return render(request, 'mainPage/indexExpanded.html')

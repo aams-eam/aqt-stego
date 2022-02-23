@@ -3,8 +3,17 @@ import html
 from attPosition import decode_line
 from attPosition import total_capacity
 
-if (True):
-    payload = {'pass': '1234'}
+# CONFIGURATION
+postmsg = 'stego'
+postpass = '1234'
+getpass = '1234'
+withpass = True
+
+payload = {'msg': postmsg, 'pass': postpass}
+r = requests.post("http://127.0.0.1:8000/shop", data=payload)
+
+if (withpass):
+    payload = {'pass': getpass}
     r = requests.get("http://127.0.0.1:8000/shop", params=payload)
 else:
     r = requests.get('http://127.0.0.1:8000/shop')
@@ -42,4 +51,4 @@ del totalbits[:msg_length]
 # IS A BETTER WAY TO DECODE UTF-8 FROM STRING OF BITS ?
 msg = [msg[i:i+8] for i in range(0, len(msg), 8)]
 msg = "".join([chr(int(c, 2)) for c in msg])
-assert msg == 'stego'
+assert msg == postmsg
