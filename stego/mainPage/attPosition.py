@@ -82,20 +82,10 @@ def num_att2bits(num_att):
 
 def max_bits_line(line):
 
+    num_bits = 0
     num_att = num_attributes_line(line)
 
     return num_att2bits(num_att)
-
-
-
-def total_capacity(line):
-
-    maxbits = 0
-
-    for line in line.splitlines():
-        maxbits += max_bits_line(line)
-
-    return maxbits
 
 
 
