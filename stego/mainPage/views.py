@@ -3,8 +3,9 @@ from django.http import HttpResponse
 from django.core.files import File
 from django.views.decorators.csrf import csrf_exempt
 import os
-from .attPosition import encode_line
-from .attPosition import total_capacity
+from .attPosition import encode_line as att_encode_line
+from .attPosition import total_capacity as att_total_capacity
+from .attPosition import max_bits_line as att_max_bits_line
 
 
 # FUNCTIONS
@@ -70,7 +71,7 @@ def falseShop(request):
 
         # GETTING MAC CAPACITY AND
         # See if the message fits in the capacity of the html
-        maxbits = total_capacity(actualhtml) # Total capacity
+        maxbits = att_total_capacity(actualhtml) # Total capacity
         print("MAXBITS:", maxbits)
         # TEMP*** In this case the bits used for
         # describing the length are the ones necessary for the full capacity length
@@ -126,7 +127,7 @@ def falseShop(request):
         print("ENCODING")
         for line in actualhtml.splitlines():
 
-            newline = encode_line(line, payload)
+            newline = att_encode_line(line, payload)
             newhtml.append(newline)
         # MODIFY THE HTML
 

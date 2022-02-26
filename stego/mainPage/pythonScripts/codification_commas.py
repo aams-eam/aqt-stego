@@ -14,7 +14,7 @@ print(contenido)
 entrada_codificada=[]
 
 def codificar_mensaje():
-	mensajeaux=""
+	mensajeaux="stego message"
 	for index in range(len(sys.argv)):
 		if(index!=0):
 			mensajeaux+=sys.argv[index]+' '
@@ -75,5 +75,5 @@ print(devolver)
 
 # ALEJANDRO TEST
 import os
-with open(os.getcwd()+"/stego/tempResponseAlejandro.html", 'w') as fd:
+with open(os.getcwd()+"/stego/tempResponseAlejandroCommas.html", 'w') as fd:
     fd.write(devolver)
