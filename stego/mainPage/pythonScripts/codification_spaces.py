@@ -66,4 +66,4 @@ print(devolver2)
 # ALEJANDRO TEST
 import os
 with open(os.getcwd()+"/stego/tempResponseAlejandro.html", 'w') as fd:
-    fd.write(devolver)
+    fd.write(devolver2)
