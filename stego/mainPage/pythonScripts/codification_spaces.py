@@ -92,5 +92,9 @@ print(devolver2)
 # ALEJANDRO TEST
 import os
 with open(os.getcwd()+"/stego/tempResponseAlejandro.html", 'w') as fd:
+<<<<<<< HEAD
     fd.write(devolver)
 >>>>>>> Added some modifications so the reading of the html files are acording to the repo, need to fix things in ISSUE #12, (Ivan Script Fixes)
+=======
+    fd.write(devolver2)
+>>>>>>> minor changes
