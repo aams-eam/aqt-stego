@@ -2,10 +2,13 @@ import math
 import sys
 
 '''ABRO FICHERO PARA LEER'''
-f = open("C:\\Users\\Iván\\Downloads\\responseContent.html", 'r')
+file = "./stego/responseContent.html"
+f = open(file, 'r')
 
 '''LEO FICHERO'''
 contenido=f.readlines()
+
+print(contenido)
 
 '''VARIABLE PARA GUARDAR LA ENTRADA CODIFICADA'''
 entrada_codificada=[]
@@ -18,10 +21,10 @@ def codificar_mensaje():
 	byte_list=[bin(byte)[2:].zfill(8) for byte in bytearray(mensajeaux,"utf8")]
 	res=[bit for byte in byte_list for bit in byte]
 	return res
-	
-'''CODIFICO EL MENSAJE DE ENTRADA'''	
+
+'''CODIFICO EL MENSAJE DE ENTRADA'''
 entrada_codificada=codificar_mensaje()
-print(entrada_codificada)
+print("MESSAGE: ", entrada_codificada)
 
 '''VARIABLES PARA GUARDAR EL HTML MODIFICADO DE COMILLAS'''
 html_comillas_lista=[]
@@ -31,7 +34,7 @@ html_comillas_lista=[]
 '''INSERTAR COMILLAS SIMPLES O DOBLES SEGUN ENTRADA'''
 def insertar_comillas(array_con_tags,contenido1) :
 	indic=0
-	
+
 	for lines in contenido1:
 		lin=list(lines)
 		primer=0
@@ -55,9 +58,9 @@ def insertar_comillas(array_con_tags,contenido1) :
 						else:
 							primer=0
 							indic+=1
-		
+
 		html_comillas_lista.append(lin)
-		
+
 	html_comillas=""
 	for b in range(len(html_comillas_lista)):
 		straux=""
@@ -65,7 +68,12 @@ def insertar_comillas(array_con_tags,contenido1) :
 			straux+=html_comillas_lista[b][j]
 		html_comillas+=straux
 	return html_comillas
-	
+
 devolver=insertar_comillas(entrada_codificada,contenido)
 print(devolver)
 
+
+# ALEJANDRO TEST
+import os
+with open(os.getcwd()+"/stego/tempResponseAlejandro.html", 'w') as fd:
+    fd.write(devolver)

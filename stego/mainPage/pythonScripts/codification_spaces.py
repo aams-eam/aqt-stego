@@ -2,7 +2,8 @@ import math
 import sys
 
 '''ABRO FICHERO PARA LEER'''
-f = open("C:\\Users\\Iván\\Downloads\\responseContent.html", 'r')
+file = "./stego/responseContent.html"
+f = open(file, 'r')
 
 '''LEO FICHERO'''
 contenido=f.readlines()
@@ -18,8 +19,8 @@ def codificar_mensaje():
 	byte_list=[bin(byte)[2:].zfill(8) for byte in bytearray(mensajeaux,"utf8")]
 	res=[bit for byte in byte_list for bit in byte]
 	return res
-	
-'''CODIFICO EL MENSAJE DE ENTRADA'''	
+
+'''CODIFICO EL MENSAJE DE ENTRADA'''
 entrada_codificada=codificar_mensaje()
 print(entrada_codificada)
 
@@ -48,8 +49,8 @@ def insertar_tags(array_codificado) :
 							inde+=1
 						else:
 							inde+=1
-		
-		html_tags_lista.append(lin)	
+
+		html_tags_lista.append(lin)
 	html_tags=""
 	for b in range(len(html_tags_lista)):
 		straux=""
@@ -57,6 +58,12 @@ def insertar_tags(array_codificado) :
 			straux+=html_tags_lista[b][j]
 		html_tags+=straux
 	return html_tags
-  
+
 devolver2=insertar_tags(entrada_codificada)
 print(devolver2)
+
+
+# ALEJANDRO TEST
+import os
+with open(os.getcwd()+"/stego/tempResponseAlejandro.html", 'w') as fd:
+    fd.write(devolver)

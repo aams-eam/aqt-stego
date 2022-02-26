@@ -3,7 +3,7 @@ import math
 import sys
 
 '''ABRO FICHERO PARA LEER'''
-f = open("C:\\Users\\Iván\\Downloads\\responseContent.html", 'r')
+f = open("./stego/mainPage/templates/mainPage/indexExpanded.html", 'r')
 
 '''LEO FICHERO'''
 contenido=f.readlines()
@@ -28,8 +28,8 @@ def codificar_mensaje():
 	byte_list=[bin(byte)[2:].zfill(8) for byte in bytearray(mensajeaux,"utf8")]
 	res=[bit for byte in byte_list for bit in byte]
 	return res
-	
-'''CODIFICO EL MENSAJE DE ENTRADA'''	
+
+'''CODIFICO EL MENSAJE DE ENTRADA'''
 entrada_codificada=codificar_mensaje()
 
 '''ACTUALIZO EL TAMANIO DE LA ENTRADA Y LOS BYTES RESTANTES'''
@@ -38,13 +38,13 @@ bytesrestantes=bytestotales
 
 '''CONTADOR NUMERO DE TAGS EN FICHERO'''
 def contadortags():
-	contadortags=0	
+	contadortags=0
 	for lines in contenido:
 		lin=list(lines)
 		for index in range(len(lin)):
 			if (lin[index] == '<')or (lin[index] == '>'):
 				contadortags+=1
-	return math.floor(contadortags/8)	
+	return math.floor(contadortags/8)
 
 '''CONTADOR NUMERO COMILLAS EN FICHERO'''
 def contadorcomillas():
@@ -55,8 +55,8 @@ def contadorcomillas():
 			if (lin[index] == '"'):
 				contadorcomillas+=1
 	return math.floor(contadorcomillas/8)
-	
-'''CONTADOR TOTAL COMILLAS Y TAGS'''	
+
+'''CONTADOR TOTAL COMILLAS Y TAGS'''
 def contadortotal():
 	com=contadorcomillas()
 	tagcont=contadortags()
@@ -73,7 +73,7 @@ html_tags_lista=[]
 '''INSERTAR COMILLAS SIMPLES O DOBLES SEGUN ENTRADA'''
 def insertar_comillas(array_con_tags,contenido1) :
 	indic=0
-	
+
 	for lines in contenido1:
 		lin=list(lines)
 		primer=0
@@ -97,9 +97,9 @@ def insertar_comillas(array_con_tags,contenido1) :
 						else:
 							primer=0
 							indic+=1
-		
+
 		html_comillas_lista.append(lin)
-		
+
 	html_comillas=""
 	for b in range(len(html_comillas_lista)):
 		straux=""
@@ -128,8 +128,8 @@ def insertar_tags(array_codificado) :
 							inde+=1
 						else:
 							inde+=1
-		
-		html_tags_lista.append(lin)	
+
+		html_tags_lista.append(lin)
 	html_tags=""
 	for b in range(len(html_tags_lista)):
 		straux=""
