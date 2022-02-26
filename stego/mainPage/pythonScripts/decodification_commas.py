@@ -1,7 +1,7 @@
 import os
 import re
 
-with open(os.getcwd()+"/tempResponseAlejandro.html") as fd:
+with open(os.getcwd()+"/stego/tempResponseAlejandroCommas.html") as fd:
     content = fd.read()
 
 hlines = content.splitlines()
@@ -43,5 +43,10 @@ def retrieve_msg_commas (input):
             msg.append(bit)
 
 
-msg = retrieve_msg_commas(hlines)
+msg = []
+for line in hlines:
+    tmp = retrieve_msg_commas(line)
+    if(tmp is not None):
+        msg.append()
+
 print(msg)

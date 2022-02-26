@@ -1,7 +1,7 @@
 import os
 import re
 
-with open(os.getcwd()+"\\responseContent.html") as fd:
+with open(os.getcwd()+"/stego/tempResponseAlejandroSpaces.html") as fd:
     content = fd.read()
 
 hlines = content.splitlines()
@@ -34,3 +34,12 @@ def retrieve_msg_spaces (input):
             msg.append(1)
         else:
             msg.append(0)
+
+
+msg = []
+for line in hlines:
+    tmp = retrieve_msg_spaces(line)
+    if(tmp is not None):
+        msg.append()
+
+print(msg)
