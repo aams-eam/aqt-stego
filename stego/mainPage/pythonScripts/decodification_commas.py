@@ -1,7 +1,7 @@
 import os
 import re
 
-with open(os.getcwd()+"\\responseContent.html") as fd:
+with open(os.getcwd()+"/tempResponseAlejandro.html") as fd:
     content = fd.read()
 
 hlines = content.splitlines()
@@ -41,3 +41,7 @@ def retrieve_msg_commas (input):
 
         for bit in bits:
             msg.append(bit)
+
+
+msg = retrieve_msg_commas(hlines)
+print(msg)
