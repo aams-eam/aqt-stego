@@ -2,6 +2,7 @@ import math
 import sys
 
 '''ABRO FICHERO PARA LEER'''
+'''AQUI PONGO LA RUTA DEL FICHERO'''
 f = open("C:\\Users\\Iván\\Downloads\\responseContent.html", 'r')
 
 '''LEO FICHERO'''
