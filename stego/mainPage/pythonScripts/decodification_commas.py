@@ -1,6 +1,11 @@
 import os
 import re
 
+with open(os.getcwd()+"\\responseContent.html") as fd:
+    content = fd.read()
+
+hlines = content.splitlines()
+
 
 #If len > 0, the HTML line given contains single and/or double quotation marks
 def quotation_marks_lines (input):
@@ -29,6 +34,7 @@ def retrieve_msg_commas (input):
     relist = r'"(.*?)"'
     relist2 = r"'(.*?)'"
     double = {}
+    msg = []
 
     if (quotation_marks_lines (input) > 0):
         p = re.compile(relist)
@@ -45,6 +51,8 @@ def retrieve_msg_commas (input):
 
         for bit in bits:
             msg.append(bit)
+
+    return msg
 
 
 

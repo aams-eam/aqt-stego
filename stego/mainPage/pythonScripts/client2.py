@@ -1,17 +1,12 @@
 import requests
 import html
-from attPosition import decode_line
-from attPosition import total_capacity
-import sslcrypto
+import re
+from attPosition import decode_line as att_decode_line
+from decodification_commas import retrieve_msg_commas
+from decodification_spaces import retrieve_msg_spaces
 
+K1 = 'ca729843da49dc89e95e57f8cb78ea2e45b58594'
 
-# GENERATE PRIVATE AND PUBLIC KEY AND SEND IT IN HEX
-curve = sslcrypto.ecc.get_curve("secp192k1")
-private_key = curve.new_private_key(is_compressed=True)
-public_key = curve.private_to_public(private_key)
-public_key_hex = public_key.hex()
-print(public_key)
-print(public_key_hex)
 
 if (True):
     payload = {
@@ -26,32 +21,50 @@ htmlresponse = html.unescape(r.text)
 html_lines = htmlresponse.splitlines()
 print(htmlresponse)
 
-# totalbits = []
-# for line in html_lines:
-#     bits_part = decode_line(line)
-#     if(not bits_part==None):
-#         totalbits = totalbits + bits_part
-#
-# print(totalbits)
-#
-# maxbits = total_capacity(htmlresponse)
-# basebits_of_len = len("{0:b}".format(maxbits))
-# bits_of_key = 16
-# redundancy = 1
-# init = "0001001" # algo
-#
-#
-# # find init
-# pos = 0
-#
-# msg_length_bits = totalbits[pos:basebits_of_len]
-# del totalbits[pos:basebits_of_len]
-# msg_length = int("".join(msg_length_bits), 2)
-# msg = "".join(totalbits[:msg_length])
-# del totalbits[:msg_length]
-#
-#
-# # IS A BETTER WAY TO DECODE UTF-8 FROM STRING OF BITS ?
-# msg = [msg[i:i+8] for i in range(0, len(msg), 8)]
-# msg = "".join([chr(int(c, 2)) for c in msg])
-# assert msg == 'stego'
+att_bits = []
+for line in html_lines:
+    commas_bits = retrieve_msg_commas(line)
+    maxbits_commas = maxbits_commas + quotation_marks_lines (line)
+    spaces_bits = retrieve_msg_spaces(line)
+    bits_part = att_decode_line(line)
+    if(not bits_part==None):
+        att_bits = att_bits + bits_part
+
+#Key corresponds to the first 160 bits
+K1bytes = bytes.fromhex(K1)
+K2 = att_bits[0:160]
+del att_bits[0:160]
+att_bits[0:length]
+
+#Length
+quotation_marks_lines (input)
+
+
+
+
+
+#Find init
+def find_init(pattern, string):
+    patterns[]
+    for match in re.finditer(pattern, string):
+        patterns.append(match.end())
+    return patterns
+
+
+counter = 0
+while (True):
+    #Decipher
+    ciphered_text = []
+    deciphered_text = []
+    patterns = find_init(init, totalbits)
+    pos = patterns[counter] + 1
+    for i in range(pos, length):
+        ciphered_text.append(totalbits[i])
+
+    cipher = ARC4.new(K2) #Pre-shared key?
+    deciphered_text = cipher.decrypt(ciphered_text)
+
+    if (deciphered_text == "stego"):
+        break
+    else:
+        counter = counter + 1
