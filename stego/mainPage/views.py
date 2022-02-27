@@ -6,9 +6,9 @@ from django.views.decorators.csrf import csrf_exempt
 
 ### NATIVE IMPORTS ###
 import os
+from random import choice
 
 ### CIPHERING IMPORTS ###
-import sslcrypto
 from Crypto.Cipher import ARC4
 from Crypto.Hash import SHA
 from Crypto.Random import get_random_bytes
@@ -26,6 +26,7 @@ from .pythonScripts.decodification_spaces import total_capacity as space_total_c
 ### GLOBAL VARIABLES ###
 SESSIONKEY_LEN = 160 # Number of bits of the session key
 INIT_LEN = 8         # Number of bits in the init string
+K1 = "ca729843da49dc89e95e57f8cb78ea2e45b58594" # Pre-shared key between client2 and the webserver
 
 
 ### FUNCTIONS ###
@@ -36,6 +37,11 @@ def writetofile(content, filedir):
     testfile.close
     f.close
     return HttpResponse()
+
+
+
+def bitstring_to_bytes(s):
+    return int(s, 2).to_bytes((len(s) + 7) // 8, byteorder='big')
 
 
 
@@ -73,95 +79,103 @@ def falseShop(request):
 
         # see if it exists parameter pass
         rpass = request.GET.get('pass', None)
-        pubkey = request.GET.get('pubkey', None)
 
-        if((rpass is not None) and (pubkey is not None)):
+        if(rpass is not None):
             # buscar un archivo con nombre pass.html
             # si no existe devolver lo otro, si existe devolverlo
 
             try: # if the file exists do the encode and encryption -->
+
+                # GET THE MSG
                 with open(rpass+".html", 'r') as fd:
+                    msg = fd.read()
 
 
-                    # GET BASE HTML
-                    htmlresponse = render(request, 'mainPage/indexExpanded.html')
-                    actualhtml = htmlresponse.content.decode("utf-8")
+                # GET BASE HTML
+                htmlresponse = render(request, 'mainPage/indexExpanded.html')
+                actualhtml = htmlresponse.content.decode("utf-8")
 
-                    # MAX BITS OF EACH ENCODING
-                    maxbits_att = att_total_capacity(actualhtml) # Total capacity
-                    maxbits_quote = quot_total_capacity(actualhtml) # capacity of space encoding
-                    maxbits_tag = space_total_capacity(actualhtml) # capacity of quotes encoding
-                    # TEMP*** In this case the bits used for
-                    # describing the length are the ones necessary for the max capacity of
-                    # quote or spaces
-                    basebits_of_len = len("{0:b}".format(max(maxbits_quote, maxbits_tag)))
-
-                    # GET THE MSG
-                    with open(rpass+".html", 'r') as fd:
-                        msg = fd.read()
+                # MAX BITS OF EACH ENCODING
+                maxbits_att = att_total_capacity(actualhtml) # Total capacity
+                maxbits_quote = quot_total_capacity(actualhtml) # capacity of space encoding
+                maxbits_tag = space_total_capacity(actualhtml) # capacity of quotes encoding
+                # TEMP*** In this case the bits used for
+                # describing the length are the ones necessary for the max capacity of
+                # quote or spaces
+                basebits_of_len = len("{0:b}".format(max(maxbits_quote, maxbits_tag)))
 
 
-                    # CREATE LIST OF BITS WITH THE MESSAGE
-                    mbits = msg2lbits(msg) # list of bits with the message
-                    mlength = list("{0:b}".format(len(mbits)).zfill(basebits_of_len)) # length of the message
+                # CREATE LIST OF BITS WITH THE MESSAGE
+                mbits = msg2lbits(msg) # list of bits with the message
+                mlength_bytes = bitstring_to_bytes("{0:b}".format(len(mbits)).zfill(basebits_of_len))
 
-                    # GENERATE SESSION KEY OF 160 BITS
-                    random = get_random_bytes(16)
-                    session_key = SHA.new(random).digest() # 160 bits key length
+                # GENERATE RANDOM SESSION KEY OF 160 BITS
+                random = get_random_bytes(16)
+                K2 = SHA.new(random).digest() # 160 bits key length
 
-                    # LOAD PUBLIC KEY
-                    pubkeyb = bytes.fromhex(pubkey)
+                # CIPHER THE MESSAGE WITH THE K2 AND K1 USING RC4 ALGORITHM
+                cipher = ARC4.new(K2)
+                encmsg = cipher.encrypt(msg.encode('utf-8')) # Encrypt the message with K2
+                cipher = ARC4.new(bytes.fromhex(K1))
+                encmsg = cipher.encrypt(encmsg) # Encrypt the message with K1
+                K2length = K2 + mlength_bytes
+                encK2length = cipher.encrypt(K2length) # Encrypt the key with the length concatenated
 
-                    # CIPHER SIMMETRIC KEY WITH PUBLIC KEY
-                    curve = sslcrypto.ecc.get_curve("secp192k1")
-                    enckey = curve.encrypt(session_key, pubkeyb, algo="aes-256-ofb")
-
-                    # CIPHER THE MESSAGE WITH THE SESSION KEY AND ARC4
-                    cipher = ARC4.new(session_key)
-                    encmsg = cipher.encrypt(msg.encode('utf-8'))
-
-                    init = ['1', '0', '0', '1', '1', '0', '0', '0'] # Indicator of start of message
-                    encmsgbits = bits2lbits(encmsg) # encoded msg to list of bits
-                    enckeybits = bits2lbits(enckey) # encoded key to list of bits
+                init = ['1', '0', '0', '1', '1', '0', '0', '0'] # Indicator of start of message
+                encmsg_bits = bits2lbits(encmsg) # encoded msg to list of bits
+                encK2length_bits = bits2lbits(encK2length) # encoded K2 concatenated with length
 
 
-                    payloadatt = enckeybits + mlength # TEMP*** concat random bits until the end
-                    payloadmsg = init + encmsgbits # TEMP*** make robustness and concatenate random bits if space left
+                # K2 and length encrypted with K1 and concatenated with random bits until the end
+                payloadatt = encK2length_bits + [choice(['1', '0']) for i in range(maxbits_att-len(encK2length_bits))]
 
-                    # MODIFY THE HTML
-                    newhtml = []
+                # init and msg encrypted with K1 repeated and padded with random bits
+                payloadmsg_quotes = init + encmsg_bits
+                payloadmsg_quotes = payloadmsg_quotes*(int(maxbits_quote/len(payloadmsg_quotes)))
+                payloadmsg_quotes = payloadmsg_quotes + [choice(['1', '0']) for i in range(maxbits_quote-len(payloadmsg_quotes))]
 
-                    # ENCODE payloadatt IN ATTRIBUTES
-                    for line in actualhtml.splitlines():
+                # init and msg encrypted with K1 repeated and padded with random bits
+                payloadmsg_spaces = init + encmsg_bits
+                payloadmsg_spaces = payloadmsg_spaces*(int(maxbits_tag/len(payloadmsg_spaces)))
+                payloadmsg_spaces = payloadmsg_spaces + [choice(['1', '0']) for i in range(maxbits_tag-len(payloadmsg_spaces))]
 
-                        newline = att_encode_line(line, payloadatt)
-                        newhtml.append(newline)
+                # MODIFY THE HTML
+                newhtml = []
 
-                    # ENCODE payloadmsg multiple times with tag codification
-                    newhtml2 = []
-                    for line in newhtml:
+                # ENCODE payloadatt IN ATTRIBUTES
+                for line in actualhtml.splitlines():
 
-                        newline = spaces_encode_line(line, payloadmsg)
-                        newhtml2.append(newline)
+                    newline = att_encode_line(line, payloadatt)
+                    newhtml.append(newline)
 
-                    # ENCODE pyaload msg multiple times with quotes codification
-                    newhtml3 = []
-                    for line in newhtml:
+                # TEMP*** Uncomment when Ivan Torrejon finish his functions
+                # # ENCODE payloadmsg multiple times with tag codification
+                # newhtml2 = []
+                # for line in newhtml:
+                #
+                #     newline = spaces_encode_line(line, payloadmsg_quotes)
+                #     newhtml2.append(newline)
+                #
+                # # ENCODE pyaload msg multiple times with quotes codification
+                # newhtml3 = []
+                # for line in newhtml:
+                #
+                #     newline = commas_encode_line(line, payloadmsg_spaces)
+                #     newhtml3.append(newline)
 
-                        newline = commas_encode_line(line, payloadmsg)
-                        newhtml3.append(newline)
 
+                # Store the new html in file with name of the pass
+                modifiedhtml = "\n".join(newhtml) # TEMP***
+                # modifiedhtml = "\n".join(newhtml3)
 
-                    # Store the new html in file with name of the pass
-                    modifiedhtml = "\n".join(newhtml)
-                    # modifiedhtml = "\n".join(newhtml3)
+                print(modifiedhtml)
 
-                    # Return modified page
-                    htmlresponse = render(request, 'mainPage/indexExpanded.html')
-                    htmlresponse.content = modifiedhtml
+                # Return modified page
+                htmlresponse = render(request, 'mainPage/indexExpanded.html')
+                htmlresponse.content = modifiedhtml
 
-                    # TEMP*** remove the file
-                    return htmlresponse
+                # TEMP*** remove the file
+                return htmlresponse
 
             except FileNotFoundError:
                 return render(request, 'mainPage/indexExpanded.html')
@@ -188,8 +202,6 @@ def falseShop(request):
         maxbits_quote = quot_total_capacity(actualhtml) # capacity of space encoding
         maxbits_tag = space_total_capacity(actualhtml) # capacity of quotes encoding
 
-        print(maxbits_att,maxbits_quote,maxbits_tag)
-
         # TEMP*** In this case the bits used for
         # describing the length are the ones necessary for the max capacity of
         # quote or spaces
@@ -202,7 +214,7 @@ def falseShop(request):
             return HttpResponseNotFound("404 NOT FOUND")
 
         # sufficient capacity for init and message in quotes and spaces encoding
-        if((INIT_LEN + msg_len) >  maxbits_att):
+        if(((INIT_LEN + msg_len) >  maxbits_quote) and ((INIT_LEN + msg_len) >  maxbits_tag)):
             # return 404 not found as indicator
             return HttpResponseNotFound("404 NOT FOUND")
 
