@@ -17,6 +17,8 @@ from Crypto.Random import get_random_bytes
 from .pythonScripts.attPosition import encode_line as att_encode_line
 from .pythonScripts.attPosition import total_capacity as att_total_capacity
 from .pythonScripts.attPosition import max_bits_line as att_max_bits_line
+from .pythonScripts.codification_commas import insertar_comillas as quote_encode_line
+from .pythonScripts.codification_spaces import insertar_tags as space_encode_line
 from .pythonScripts.decodification_commas import total_capacity as quot_total_capacity
 from .pythonScripts.decodification_spaces import total_capacity as space_total_capacity
 
@@ -148,26 +150,27 @@ def falseShop(request):
                     newline = att_encode_line(line, payloadatt)
                     newhtml.append(newline)
 
-                # TEMP*** Uncomment when Ivan Torrejon finish his functions
-                # # ENCODE payloadmsg multiple times with tag codification
-                # newhtml2 = []
-                # for line in newhtml:
-                #
-                #     newline = spaces_encode_line(line, payloadmsg_quotes)
-                #     newhtml2.append(newline)
-                #
-                # # ENCODE pyaload msg multiple times with quotes codification
-                # newhtml3 = []
-                # for line in newhtml:
-                #
-                #     newline = commas_encode_line(line, payloadmsg_spaces)
-                #     newhtml3.append(newline)
+
+                # ENCODE payloadmsg multiple times with tag codification
+                newhtml2 = []
+                for line in newhtml:
+
+                    newline = space_encode_line(line, payloadmsg_spaces)
+                    newhtml2.append(newline)
+
+                print(newhtml2)
+
+                # ENCODE pyaload msg multiple times with quotes codification
+                newhtml3 = []
+                for line in newhtml2:
+
+                    newline = quote_encode_line(line, payloadmsg_quotes)
+                    newhtml3.append(newline)
+
 
 
                 # Store the new html in file with name of the pass
-                modifiedhtml = "\n".join(newhtml) # TEMP***
-                # modifiedhtml = "\n".join(newhtml3)
-
+                modifiedhtml = "\n".join(newhtml3)
                 print(modifiedhtml)
 
                 # Return modified page
