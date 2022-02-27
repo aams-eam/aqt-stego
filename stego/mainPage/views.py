@@ -1,14 +1,25 @@
+### DJANGO IMPORTS ###
 from django.shortcuts import render
 from django.http import HttpResponse
 from django.core.files import File
 from django.views.decorators.csrf import csrf_exempt
+
+### NATIVE IMPORTS ###
 import os
+
+### ENCODING SCRIPTS IMPORTS ###
 from .attPosition import encode_line as att_encode_line
 from .attPosition import total_capacity as att_total_capacity
 from .attPosition import max_bits_line as att_max_bits_line
 
+### CIPHERING IMPORTS ###
+import sslcrypto
+from Crypto.Cipher import ARC4
+from Crypto.Hash import SHA
+from Crypto.Random import get_random_bytes
 
-# FUNCTIONS
+
+### FUNCTIONS ###
 def writetofile(content, filedir):
     f = open(os.getcwd()+'/'+filedir, 'w')
     testfile = File(f)
@@ -18,12 +29,33 @@ def writetofile(content, filedir):
     return HttpResponse()
 
 
+
+def key2lbits(key):
+    # convert message in list of bytes
+    byte_list = [bin(byte)[2:].zfill(8) for byte in bytearray(key)]
+    # conver list of bytes in list of bits
+    kbits = [bit for byte in byte_list for bit in byte]
+    return kbits
+
+
+
+def msg2lbits(msg):
+    # convert message in list of bytes
+    byte_list = [bin(byte)[2:].zfill(8) for byte in bytearray(msg, "utf8")]
+    # conver list of bytes in list of bits
+    mbits = [bit for byte in byte_list for bit in byte]
+    return mbits
+
+
+
 # Create your views here.
 def home(request):
 
     return render(request, 'mainPage/indexExpanded.html')
 
 
+
+### VIEWS ###
 @csrf_exempt
 def falseShop(request):
 
@@ -105,20 +137,23 @@ def falseShop(request):
 
         # MODIFY THE HTML
         newhtml = []
-        # convert message in list of bytes
-        byte_list = [bin(byte)[2:].zfill(8) for byte in bytearray(msg, "utf8")]
-        # conver list of bytes in list of bits
-        mbits = [bit for byte in byte_list for bit in byte]
+        mbits = msg2lbits(msg) # list of bits with the message
+        mlength = list("{0:b}".format(len(mbits)).zfill(bits_of_len)) # length of the message
 
-        # HOW TO SEPARATE THE MESSAGE TO ENCODE IT
-        # PUT IT AS MANY TYPES WITH CERTAIN SEPARATION OR WHAT?
-        mlength = list("{0:b}".format(len(mbits)).zfill(bits_of_len))
-        print(mlength)
-        key = [] # TEMP *** KEY FOR CIPHERING # known length for the receiver # MAYBE CIPHER ONLY THE KEY WITH PUBLIC CRYPTOGRAPHY
-        encriptedm = mbits # TEMP *** CIPHER THE MESSAGE
-        init = [] # TEMP*** initial message that identifies the start of a message
+        # GENERATE SESSION KEY OF 160 BITS
+        random = get_random_bytes(16)
+        session_key = SHA.new(random).digest() # 160 bits key length
+        kbits = key2lbits(session_key)
+
+        # CIPHER THE MESSAGE WITH THE SESSION KEY AND ARC4
+        cipher = ARC4.new(session_key)
+        encmsg = cipher.encrypt(msg)
+        print("MSG:", len(msg), msg)
+        print("CIPHERMESSAGE:", len(encmsg), encmsg)
+
+        init = ['1', '0', '0', '1', '1', '0', '0', '0'] # Indicator of start of message
         # FINAL PAYLOAD
-        payload = init + mlength + key + mbits
+        payload = init + mlength + kbits + mbits
 
         print(payload)
 
