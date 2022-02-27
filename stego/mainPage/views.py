@@ -104,7 +104,7 @@ def falseShop(request):
                 # TEMP*** In this case the bits used for
                 # describing the length are the ones necessary for the max capacity of
                 # quote or spaces
-                basebits_of_len = len("{0:b}".format(max(maxbits_quote, maxbits_tag)))
+                basebits_of_len = len("{0:b}".format(min(maxbits_quote, maxbits_tag)))
 
 
                 # CREATE LIST OF BITS WITH THE MESSAGE
