@@ -1,11 +1,6 @@
 import os
 import re
 
-with open(os.getcwd()+"/stego/tempResponseAlejandroSpaces.html") as fd:
-    content = fd.read()
-
-hlines = content.splitlines()
-msg = []
 
 #If len > 0, the HTML line given contains this kind of brackets < >
 def tag_lines (input):
@@ -16,6 +11,16 @@ def tag_lines (input):
         matches += re.findall(r, input)
 
     return len(matches)
+
+
+def total_capacity (input):
+    maxbits = 0
+    for line in input.splitlines():
+        maxbits += tag_lines(line)
+
+    return maxbits
+
+
 
 #Takes the HTML lines with HTML tags and returns the codification
 #depending on if it has a space between the brackets or not.
@@ -35,11 +40,22 @@ def retrieve_msg_spaces (input):
         else:
             msg.append(0)
 
+def main():
 
-msg = []
-for line in hlines:
-    tmp = retrieve_msg_spaces(line)
-    if(tmp is not None):
-        msg.append()
+    with open(os.getcwd()+"/stego/tempResponseAlejandroSpaces.html") as fd:
+        content = fd.read()
 
-print(msg)
+    hlines = content.splitlines()
+
+    msg = []
+    for line in hlines:
+        tmp = retrieve_msg_spaces(line)
+        if(tmp is not None):
+            msg.append()
+
+            print(msg)
+
+if __name__ == "__main__":
+    # test_bits_total()
+    # test_num_attributes_line()
+    main()

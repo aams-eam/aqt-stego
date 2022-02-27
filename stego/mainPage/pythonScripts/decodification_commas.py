@@ -1,12 +1,6 @@
 import os
 import re
 
-with open(os.getcwd()+"/stego/tempResponseAlejandroCommas.html") as fd:
-    content = fd.read()
-
-hlines = content.splitlines()
-msg = []
-
 
 #If len > 0, the HTML line given contains single and/or double quotation marks
 def quotation_marks_lines (input):
@@ -17,6 +11,16 @@ def quotation_marks_lines (input):
         matches += re.findall(r, input)
 
     return len(matches)
+
+
+
+def total_capacity (input):
+    maxbits = 0
+    for line in input.splitlines():
+        maxbits += quotation_marks_lines(line)
+
+    return maxbits
+
 
 
 #Takes the HTML lines with quotation marks and returns the codification
@@ -43,10 +47,24 @@ def retrieve_msg_commas (input):
             msg.append(bit)
 
 
-msg = []
-for line in hlines:
-    tmp = retrieve_msg_commas(line)
-    if(tmp is not None):
-        msg.append()
 
-print(msg)
+def main():
+
+    with open(os.getcwd()+"/stego/tempResponseAlejandroCommas.html") as fd:
+        content = fd.read()
+
+    hlines = content.splitlines()
+
+    msg = []
+    for line in hlines:
+        tmp = retrieve_msg_commas(line)
+        if(tmp is not None):
+            msg.append()
+
+            print(msg)
+
+
+if __name__ == "__main__":
+    # test_bits_total()
+    # test_num_attributes_line()
+    main()
