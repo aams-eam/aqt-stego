@@ -2,17 +2,29 @@ import requests
 import html
 from attPosition import decode_line
 from attPosition import total_capacity
+import sslcrypto
+
+
+# GENERATE PRIVATE AND PUBLIC KEY AND SEND IT IN HEX
+curve = sslcrypto.ecc.get_curve("secp192k1")
+private_key = curve.new_private_key(is_compressed=True)
+public_key = curve.private_to_public(private_key)
+public_key_hex = public_key.hex()
+print(public_key)
+print(public_key_hex)
 
 if (True):
-    payload = {'pass': '1234'}
+    payload = {
+            'pass': '1234',
+            'pubkey': public_key_hex,
+            }
     r = requests.get("http://127.0.0.1:8000/shop", params=payload)
 else:
     r = requests.get('http://127.0.0.1:8000/shop')
 
 
-htmlresponse =html.unescape(r.text)
+htmlresponse = html.unescape(r.text)
 html_lines = htmlresponse.splitlines()
-print(htmlresponse)
 
 totalbits = []
 for line in html_lines:
