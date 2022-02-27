@@ -150,7 +150,6 @@ def falseShop(request):
                     newline = att_encode_line(line, payloadatt)
                     newhtml.append(newline)
 
-
                 # ENCODE payloadmsg multiple times with tag codification
                 newhtml2 = []
                 for line in newhtml:
