@@ -17,11 +17,11 @@ def msg2lbits(msg):
 
 
 
-msg = "stegoa"
+msg = "asf"
 mbits = msg2lbits(msg)
 
 print("".join(mbits))
-with open(os.getcwd()+"/stego/tempResponseAlejandroCommas.html") as fd:
+with open(os.getcwd()+"/stego/responseContent.html") as fd:
     content = fd.read()
 
 hlines = content.splitlines()

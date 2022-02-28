@@ -96,6 +96,7 @@ for line in html_lines:
     bits = retrieve_msg_commas(line)
     if(len(bits)>0):
         msg_commas += bits
+        
 
 msg_commas = "".join(msg_commas)
 print(msg_commas)
