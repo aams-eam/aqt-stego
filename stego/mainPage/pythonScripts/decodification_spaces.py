@@ -1,7 +1,6 @@
 import os
 import re
 
-
 #If len > 0, the HTML line given contains this kind of brackets < >
 def tag_lines (input):
     re_list = ['<', '>']
@@ -27,6 +26,7 @@ def total_capacity (input):
 def retrieve_msg_spaces (input):
     match1 = re.search('<\s', input)
     match2 = re.search('\s>', input)
+    msg = []
 
     if(tag_lines(input) > 0):
         if (match1):
@@ -39,6 +39,8 @@ def retrieve_msg_spaces (input):
             msg.append(1)
         else:
             msg.append(0)
+
+    return msg
 
 def main():
 
