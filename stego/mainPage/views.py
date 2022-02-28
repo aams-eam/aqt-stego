@@ -104,7 +104,8 @@ def falseShop(request):
                 # TEMP*** In this case the bits used for
                 # describing the length are the ones necessary for the max capacity of
                 # quote or spaces
-                basebits_of_len = len("{0:b}".format(max(maxbits_quote, maxbits_tag)))
+                basebits_of_len = len("{0:b}".format(min(maxbits_quote, maxbits_tag)))
+                print("basebits_of_len:", basebits_of_len)
 
 
                 # CREATE LIST OF BITS WITH THE MESSAGE
@@ -114,22 +115,28 @@ def falseShop(request):
                 # GENERATE RANDOM SESSION KEY OF 160 BITS
                 random = get_random_bytes(16)
                 K2 = SHA.new(random).digest() # 160 bits key length
+                K2 = bytes.fromhex("ca729843da49dc89e95e57fabc78ea2e45b58594")
 
                 # CIPHER THE MESSAGE WITH THE K2 AND K1 USING RC4 ALGORITHM
                 cipher = ARC4.new(K2)
                 encmsg = cipher.encrypt(msg.encode('utf-8')) # Encrypt the message with K2
                 cipher = ARC4.new(bytes.fromhex(K1))
                 encmsg = cipher.encrypt(encmsg) # Encrypt the message with K1
-                K2length = K2 + mlength_bytes
-                encK2length = cipher.encrypt(K2length) # Encrypt the key with the length concatenated
+                # Concatenate K2, mlength_bytes and padding for making it 8 multiple
+
+                K2length_padding = K2 + mlength_bytes + padding
+                # K2 + mlength_bytes to bitsstring
+                encK2length = cipher.encrypt(K2length_padding) # Encrypt the key with the length concatenated
 
                 init = ['1', '0', '0', '1', '1', '0', '0', '0'] # Indicator of start of message
                 encmsg_bits = bits2lbits(encmsg) # encoded msg to list of bits
                 encK2length_bits = bits2lbits(encK2length) # encoded K2 concatenated with length
+                print(len(encmsg_bits))
 
 
                 # K2 and length encrypted with K1 and concatenated with random bits until the end
                 payloadatt = encK2length_bits + [choice(['1', '0']) for i in range(maxbits_att-len(encK2length_bits))]
+                print("".join(payloadatt))
 
                 # init and msg encrypted with K1 repeated and padded with random bits
                 payloadmsg_quotes = init + encmsg_bits
@@ -157,8 +164,6 @@ def falseShop(request):
                     newline = space_encode_line(line, payloadmsg_spaces)
                     newhtml2.append(newline)
 
-                print(newhtml2)
-
                 # ENCODE pyaload msg multiple times with quotes codification
                 newhtml3 = []
                 for line in newhtml2:
@@ -170,7 +175,6 @@ def falseShop(request):
 
                 # Store the new html in file with name of the pass
                 modifiedhtml = "\n".join(newhtml3)
-                print(modifiedhtml)
 
                 # Return modified page
                 htmlresponse = render(request, 'mainPage/indexExpanded.html')

@@ -1,12 +1,6 @@
 import os
 import re
 
-with open(os.getcwd()+"\\responseContent.html") as fd:
-    content = fd.read()
-
-hlines = content.splitlines()
-
-
 #If len > 0, the HTML line given contains single and/or double quotation marks
 def quotation_marks_lines (input):
     re_list = [r'"(.*?)"', r"'(.*?)'"]

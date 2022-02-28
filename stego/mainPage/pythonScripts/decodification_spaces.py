@@ -1,11 +1,6 @@
 import os
 import re
 
-with open(os.getcwd()+"\\responseContent.html") as fd:
-    content = fd.read()
-
-hlines = content.splitlines()
-
 #If len > 0, the HTML line given contains this kind of brackets < >
 def tag_lines (input):
     re_list = ['<', '>']
