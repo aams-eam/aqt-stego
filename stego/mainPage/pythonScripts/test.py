@@ -19,21 +19,23 @@ def msg2lbits(msg):
 
 msg = "stegoa"
 mbits = msg2lbits(msg)
-print("".join(mbits))
 
+print("".join(mbits))
 with open(os.getcwd()+"/stego/tempResponseAlejandroCommas.html") as fd:
     content = fd.read()
 
 hlines = content.splitlines()
 newhtml = []
 for line in hlines:
-    newline = insertar_comillas(line, mbits)
+    newline = insertar_tags(line, mbits)
     newhtml.append(newline)
+
+print("\n".join(newhtml))
 
 # decodification
 msg = []
 for line in newhtml:
-    tmp = retrieve_msg_commas(line)
+    tmp = retrieve_msg_spaces(line)
     if(tmp is not None):
         msg += tmp
 
