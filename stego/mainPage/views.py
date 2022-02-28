@@ -47,7 +47,7 @@ def bitstring_to_bytes(s):
 
 
 
-def bits2lbits(key):
+def bytes2lbits(key):
     # convert message in list of bytes
     byte_list = [bin(byte)[2:].zfill(8) for byte in bytearray(key)]
     # conver list of bytes in list of bits
@@ -105,12 +105,12 @@ def falseShop(request):
                 # describing the length are the ones necessary for the max capacity of
                 # quote or spaces
                 basebits_of_len = len("{0:b}".format(min(maxbits_quote, maxbits_tag)))
-                print("basebits_of_len:", basebits_of_len)
 
 
                 # CREATE LIST OF BITS WITH THE MESSAGE
                 mbits = msg2lbits(msg) # list of bits with the message
                 mlength_bytes = bitstring_to_bytes("{0:b}".format(len(mbits)).zfill(basebits_of_len))
+
 
                 # GENERATE RANDOM SESSION KEY OF 160 BITS
                 random = get_random_bytes(16)
@@ -122,26 +122,25 @@ def falseShop(request):
                 encmsg = cipher.encrypt(msg.encode('utf-8')) # Encrypt the message with K2
                 cipher = ARC4.new(bytes.fromhex(K1))
                 encmsg = cipher.encrypt(encmsg) # Encrypt the message with K1
-                # Concatenate K2, mlength_bytes and padding for making it 8 multiple
 
-                K2length_padding = K2 + mlength_bytes + padding
-                # K2 + mlength_bytes to bitsstring
-                encK2length = cipher.encrypt(K2length_padding) # Encrypt the key with the length concatenated
+
+                K2length = K2 + mlength_bytes
+                cipher = ARC4.new(bytes.fromhex(K1))
+                encK2length = cipher.encrypt(K2length) # Encrypt the key with the length concatenated
 
                 init = ['1', '0', '0', '1', '1', '0', '0', '0'] # Indicator of start of message
-                encmsg_bits = bits2lbits(encmsg) # encoded msg to list of bits
-                encK2length_bits = bits2lbits(encK2length) # encoded K2 concatenated with length
-                print(len(encmsg_bits))
+                encmsg_bits = bytes2lbits(encmsg) # encoded msg to list of bits
+                encK2length_bits = bytes2lbits(encK2length) # encoded K2 concatenated with length
 
 
                 # K2 and length encrypted with K1 and concatenated with random bits until the end
                 payloadatt = encK2length_bits + [choice(['1', '0']) for i in range(maxbits_att-len(encK2length_bits))]
-                print("".join(payloadatt))
 
                 # init and msg encrypted with K1 repeated and padded with random bits
                 payloadmsg_quotes = init + encmsg_bits
                 payloadmsg_quotes = payloadmsg_quotes*(int(maxbits_quote/len(payloadmsg_quotes)))
                 payloadmsg_quotes = payloadmsg_quotes + [choice(['1', '0']) for i in range(maxbits_quote-len(payloadmsg_quotes))]
+                print("".join(payloadmsg_quotes))
 
                 # init and msg encrypted with K1 repeated and padded with random bits
                 payloadmsg_spaces = init + encmsg_bits

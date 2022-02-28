@@ -30,15 +30,15 @@ def retrieve_msg_spaces (input):
 
     if(tag_lines(input) > 0):
         if (match1):
-            msg.append(1)
+            msg.append("1")
         else:
-            msg.append(0)
+            msg.append("0")
 
 
         if (match2):
-            msg.append(1)
+            msg.append("1")
         else:
-            msg.append(0)
+            msg.append("0")
 
     return msg
 

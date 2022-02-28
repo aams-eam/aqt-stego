@@ -11,12 +11,12 @@ from Crypto.Cipher import ARC4
 
 
 
-# FUNCTIONS
-# def find_init(patterns, string):
-#     patterns = []
-#     for match in re.finditer(pattern, string):
-#         patterns.append(match.end())
-#     return patterns
+### FUNCTIONS
+def find_init(pattern, string):
+    patterns = []
+    for match in re.finditer(pattern, string):
+        patterns.append(match.end())
+    return patterns
 
 
 def bitstring_to_bytes(s):
@@ -61,50 +61,56 @@ for line in html_lines:
     if(not bits_part==None):
         att_bits = att_bits + bits_part
 
-print("att_bits", "".join(att_bits))
+att_bits = "".join(att_bits)
 maxlength = len("{0:b}".format(min(maxbits_quote, maxbits_tag)))
 
 #Key corresponds to the first 160 bits
 K1bytes = bytes.fromhex(K1)
 ciphered_payload = att_bits[0:SESSIONKEY_LEN+maxlength+(8 - ((SESSIONKEY_LEN+maxlength)%8))]
-print(len(ciphered_payload), ciphered_payload)
 
 cipher = ARC4.new(K1bytes)
-ciphered_payload_bytes = bitstring_to_bytes("".join(ciphered_payload))
+ciphered_payload_bytes = bitstring_to_bytes(ciphered_payload)
 
 payload = cipher.decrypt(ciphered_payload_bytes)
 payload = bytearray(payload)
 K2bytes = payload[:20]
 del payload[:20]
 
-assert K2bytes == bytes.fromhex(K2assert)
+print("K2bytes:\t", K2bytes.hex())
+print("K2assert:\t", K2assert)
 
 length_in_bytes = payload
-length_bits = "".join(bits2lbits(length_in_bytes))
-length_bits = length_bits[:maxlength]
-length_bits = bitstring_to_bytes(length_bits)
-print(type(length_bits), len(length_bits), length_bits)
-# TEMP*** little or big?
-length = int.from_bytes(length_bits, byteorder="big")
-print(length)
+bitlength = int.from_bytes(length_in_bytes, byteorder="big")
+print(bitlength)
 
 init = ['1', '0', '0', '1', '1', '0', '0', '0'] # Indicator of start of message
 
-
+# TO-DO*** comprobar que el encode de ivan y el decode de Pablo funcionan seguidos
+# TO-DO*** comprobar que el countbits de ivan y Pablo son iguales
 
 
 
 ### QUOTATION MARKS
 msg_commas = []
 for line in html_lines:
-    tmp = retrieve_msg_commas(line)
-    if(tmp is not None):
-        msg_commas.append()
+    bits = retrieve_msg_commas(line)
+    if(len(bits)>0):
+        msg_commas += bits
 
-patterns = find_init(init, msg_commas)
+msg_commas = "".join(msg_commas)
+print(msg_commas)
+print("Total bits:", len(msg_commas)) # TO-DO*** should be the same as Django...
+patterns = find_init("".join(init), msg_commas)
+print("PATTERNS", patterns)
+print("num_messages", len(patterns))
+
 #Decipher
 counter = 0
-cipher = ARC4.new(K2bytes)
+cipher = ARC4.new(K1bytes)
+
+for patt in patterns:
+    print(patt)
+
 
 while (True):
     pos = patterns[counter] + 1
@@ -120,27 +126,50 @@ while (True):
         counter = counter + 1
 
 
-### SPACES
-msg_spaces = []
-for line in html_lines:
-    tmp = retrieve_msg_spaces(line)
-    if(tmp is not None):
-        msg_spaces.append()
 
-patterns = find_init(init, msg_spaces)
-#Decipher
-counter = 0
-cipher = ARC4.new(K2bytes)
 
-while (True):
-    pos = patterns[counter] + 1
-    for i in range(pos, pos+length):
-        ciphered_text_spaces.append(msg_spaces[i])
 
-    deciphered_text_spaces = cipher.decrypt(bitstring_to_bytes("".join(ciphered_text_spaces)))
-    plaintext = deciphered_text_spaces.decode("utf-8")
 
-    if (plaintext == "stego"):
-        break
-    else:
-        counter = counter + 1
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# ### SPACES
+# msg_spaces = []
+# for line in html_lines:
+#     tmp = retrieve_msg_spaces(line)
+#     if(len(tmp) > 0):
+#         msg_spaces += tmp
+#
+# patterns = find_init(init, msg_spaces)
+# #Decipher
+# counter = 0
+# cipher = ARC4.new(K2bytes)
+#
+# while (True):
+#     pos = patterns[counter] + 1
+#     for i in range(pos, pos+length):
+#         ciphered_text_spaces.append(msg_spaces[i])
+#
+#     deciphered_text_spaces = cipher.decrypt(bitstring_to_bytes("".join(ciphered_text_spaces)))
+#     plaintext = deciphered_text_spaces.decode("utf-8")
+#
+#     if (plaintext == "stego"):
+#         break
+#     else:
+#         counter = counter + 1

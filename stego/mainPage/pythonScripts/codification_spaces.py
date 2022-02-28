@@ -1,4 +1,4 @@
-from .counter_bytes_tags import contadortags
+from counter_bytes_tags import contadortags
 
 
 '''TAGS SEGUN ENTRADA'''

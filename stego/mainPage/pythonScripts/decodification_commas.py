@@ -33,11 +33,11 @@ def retrieve_msg_commas (input):
     if (quotation_marks_lines (input) > 0):
         p = re.compile(relist)
         for m in p.finditer(input):
-            double[m.start()] = 1
+            double[m.start()] = "1"
 
         p = re.compile(relist2)
         for m in p.finditer(input):
-            double[m.start()] = 0
+            double[m.start()] = "0"
 
         sdouble = sorted(double.items())
 
@@ -61,9 +61,9 @@ def main():
     for line in hlines:
         tmp = retrieve_msg_commas(line)
         if(tmp is not None):
-            msg.append()
+            msg += tmp
 
-            print(msg)
+    print(msg)
 
 
 if __name__ == "__main__":
