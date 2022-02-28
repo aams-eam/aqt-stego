@@ -140,12 +140,15 @@ def falseShop(request):
                 payloadmsg_quotes = init + encmsg_bits
                 payloadmsg_quotes = payloadmsg_quotes*(int(maxbits_quote/len(payloadmsg_quotes)))
                 payloadmsg_quotes = payloadmsg_quotes + [choice(['1', '0']) for i in range(maxbits_quote-len(payloadmsg_quotes))]
-                print("".join(payloadmsg_quotes))
+                print(len("".join(payloadmsg_quotes)), "".join(payloadmsg_quotes))
+                print()
 
                 # init and msg encrypted with K1 repeated and padded with random bits
                 payloadmsg_spaces = init + encmsg_bits
                 payloadmsg_spaces = payloadmsg_spaces*(int(maxbits_tag/len(payloadmsg_spaces)))
                 payloadmsg_spaces = payloadmsg_spaces + [choice(['1', '0']) for i in range(maxbits_tag-len(payloadmsg_spaces))]
+                print(len("".join(payloadmsg_spaces)), "".join(payloadmsg_spaces))
+                print()
 
                 # MODIFY THE HTML
                 newhtml = []

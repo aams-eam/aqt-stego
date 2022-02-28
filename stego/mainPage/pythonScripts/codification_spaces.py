@@ -1,7 +1,7 @@
-from counter_bytes_tags import contadortags
+from .counter_bytes_tags import contadortags
 
 
-'''TAGS SEGUN ENTRADA'''
+# '''TAGS SEGUN ENTRADA'''
 
 def insertar_tags(linea_html,entrada_codificada) :
 	inde=0

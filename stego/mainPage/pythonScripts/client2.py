@@ -53,13 +53,12 @@ maxbits_quote = total_capacity_commas(htmlresponse)
 maxbits_tag = total_capacity_spaces(htmlresponse)
 
 
+# DECODE ATT
 for line in html_lines:
-    commas_bits = retrieve_msg_commas(line)
-    spaces_bits = retrieve_msg_spaces(line)
-    # att_bits.append(att_decode_line(line))
     bits_part = att_decode_line(line)
     if(not bits_part==None):
         att_bits = att_bits + bits_part
+
 
 att_bits = "".join(att_bits)
 maxlength = len("{0:b}".format(min(maxbits_quote, maxbits_tag)))
@@ -75,6 +74,7 @@ payload = cipher.decrypt(ciphered_payload_bytes)
 payload = bytearray(payload)
 K2bytes = payload[:20]
 del payload[:20]
+K2bytes = bytes(K2bytes)
 
 print("K2bytes:\t", K2bytes.hex())
 print("K2assert:\t", K2assert)
@@ -87,7 +87,7 @@ init = ['1', '0', '0', '1', '1', '0', '0', '0'] # Indicator of start of message
 
 # TO-DO*** comprobar que el encode de ivan y el decode de Pablo funcionan seguidos
 # TO-DO*** comprobar que el countbits de ivan y Pablo son iguales
-
+# print("\n".join(html_lines))
 
 
 ### QUOTATION MARKS
@@ -96,37 +96,66 @@ for line in html_lines:
     bits = retrieve_msg_commas(line)
     if(len(bits)>0):
         msg_commas += bits
-        
+
+# if Ivan functions work well and msg is stego ==>
+msg_commas = list("1001100011011110001000110011001100101011001111101001100011011110001000110011001100101011001111101001100011011110001000110011001100101011001111101001100011011110001000110011001100101011001111101001100011011110001000110011001100101011001111101001100011011110001000110011001100101011001111101001100011011110001000110011001100101011001111101001100011011110001000110011001100101011001111101001100011011110001000110011001100101011001111101001100011011110001000110011001100101011001111101001100011011110001000110011001100101011001111101001100011011110001000110011001100101011001111101001100011011110001000110011001100101011001111101001100011011110001000110011001100101011001111101100101110011001100110")
+
+
 
 msg_commas = "".join(msg_commas)
 print(msg_commas)
-print("Total bits:", len(msg_commas)) # TO-DO*** should be the same as Django...
+print("Total bits:", len(msg_commas))
 patterns = find_init("".join(init), msg_commas)
-print("PATTERNS", patterns)
-print("num_messages", len(patterns))
 
 #Decipher
 counter = 0
-cipher = ARC4.new(K1bytes)
+# cipher = ARC4.new(K1bytes)
+
+
+print(msg_commas[:8])
+print(msg_commas[8:40])
+print()
+print()
 
 for patt in patterns:
-    print(patt)
+    try:
+        print(msg_commas[:patt+bitlength])
+        todec = msg_commas[patt:patt+bitlength]
+        print(todec)
+        print()
+
+        cipher = ARC4.new(K1bytes)
+        deciphered_text_commas = cipher.decrypt(bitstring_to_bytes(todec))
+        cipher = ARC4.new(K2bytes)
+        deciphered_text_commas = cipher.decrypt(deciphered_text_commas)
+        final = deciphered_text_commas.decode('utf-8')
+        # no errors finish the loop
+        break;
+    except Exception as e:
+        print(e)
+        print("error, continue next index")
 
 
-while (True):
-    pos = patterns[counter] + 1
-    for i in range(pos, pos+length):
-        ciphered_text_commas.append(msg_commas[i])
-
-    deciphered_text_commas = cipher.decrypt(bitstring_to_bytes("".join(ciphered_text_commas)))
-    plaintext = deciphered_text_commas.decode("utf-8")
-
-    if (plaintext == "stego"):
-        break
-    else:
-        counter = counter + 1
+print("FINAL", final)
 
 
+
+
+# while (True):
+#     pos = patterns[counter] + 1
+#     for i in range(pos, pos+length):
+#         ciphered_text_commas.append(msg_commas[i])
+#
+#     deciphered_text_commas = cipher.decrypt(bitstring_to_bytes("".join(ciphered_text_commas)))
+#     plaintext = deciphered_text_commas.decode("utf-8")
+#
+#     if (plaintext == "stego"):
+#         break
+#     else:
+#         counter = counter + 1
+#
+#
+# print("FINAL", plaintext)
 
 
 

@@ -1,6 +1,6 @@
-from counter_bytes_tags import contadorcomillas
+from .counter_bytes_tags import contadorcomillas
 
-'''INSERTAR COMILLAS SIMPLES O DOBLES SEGUN ENTRADA'''
+# '''INSERTAR COMILLAS SIMPLES O DOBLES SEGUN ENTRADA'''
 
 def insertar_comillas(linea_html,entrada_codificada) :
 	indic=0
