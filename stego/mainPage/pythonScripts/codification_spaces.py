@@ -3,7 +3,7 @@
 from counter_bytes_tags import contadortags
 
 
-'''TAGS SEGUN ENTRADA'''
+#TAGS SEGUN ENTRADA
 
 def insertar_tags(linea_html,entrada_codificada) :
 	inde=0
@@ -33,9 +33,9 @@ def insertar_tags(linea_html,entrada_codificada) :
 					else:
 						entrada_codificada.pop(0)
 						inde+=1
-	
+
 	linea_html_tags=""
 	for j in range(len(lin)):
 		linea_html_tags+=lin[j]
-		
+
 	return linea_html_tags

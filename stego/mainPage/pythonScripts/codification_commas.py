@@ -3,7 +3,7 @@ from counter_bytes_tags import contadorcomillas
 
 
 
-'''INSERTAR COMILLAS SIMPLES O DOBLES SEGUN ENTRADA'''
+#INSERTAR COMILLAS SIMPLES O DOBLES SEGUN ENTRADA
 
 def insertar_comillas(linea_html,entrada_codificada) :
 	indic=0
@@ -56,8 +56,8 @@ def insertar_comillas(linea_html,entrada_codificada) :
 							primer_simple=0
 							entrada_codificada.pop(0)
 							indic+=1
-	linea_html_comillas=""	
+	linea_html_comillas=""
 	for j in range(len(lin)):
 		linea_html_comillas+=lin[j]
-	
+
 	return linea_html_comillas
