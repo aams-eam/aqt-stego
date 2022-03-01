@@ -1,14 +1,14 @@
 
-'''CONTADOR NUMERO DE TAGS EN FICHERO'''
+#CONTADOR NUMERO DE TAGS EN FICHERO
 def contadortags(linestags):
-	contadortags=0	
+	contadortags=0
 	lin=list(linestags)
 	for index in range(len(lin)):
 		if (lin[index] == '<')or (lin[index] == '>'):
 			contadortags+=1
-	return contadortags	
+	return contadortags
 
-'''CONTADOR NUMERO COMILLAS EN FICHERO'''
+#CONTADOR NUMERO COMILLAS EN FICHERO
 def contadorcomillas(linescomillas):
 	contadorcomillas=0
 	lin=list(linescomillas)
