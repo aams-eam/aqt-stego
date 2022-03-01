@@ -1,5 +1,4 @@
-
-from counter_bytes_tags import contadorcomillas
+from .counter_bytes_tags import contadorcomillas
 
 
 

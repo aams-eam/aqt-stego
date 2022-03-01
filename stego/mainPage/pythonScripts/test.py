@@ -3,7 +3,7 @@ print(os.getcwd())
 from codification_commas import insertar_comillas
 from codification_spaces import insertar_tags
 from decodification_commas import retrieve_msg_commas
-from decodification_spaces import retrieve_msg_spaces
+from decodification_spaces import retrieve_msg_spaces, tag_lines
 from decodification_commas import total_capacity as quot_total_capacity
 from decodification_spaces import total_capacity as space_total_capacity
 
@@ -51,3 +51,6 @@ for line in newhtml:
         msg += tmp
 
 print("".join(msg))
+message = "".join(msg)
+final = message.decode('utf-8')
+print(final)
