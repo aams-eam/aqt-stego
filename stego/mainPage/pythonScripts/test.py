@@ -35,19 +35,19 @@ print(maxbits_quote)
 print(maxbits_tag)
 
 
-# hlines = content.splitlines()
-# newhtml = []
-# for line in hlines:
-#     newline = insertar_tags(line, mbits)
-#     newhtml.append(newline)
-#
-# print("\n".join(newhtml))
-#
-# # decodification
-# msg = []
-# for line in newhtml:
-#     tmp = retrieve_msg_spaces(line)
-#     if(tmp is not None):
-#         msg += tmp
-#
-# print("".join(msg))
+hlines = content.splitlines()
+newhtml = []
+for line in hlines:
+    newline = insertar_tags(line, mbits)
+    newhtml.append(newline)
+
+print("\n".join(newhtml))
+
+# decodification
+msg = []
+for line in newhtml:
+    tmp = retrieve_msg_spaces(line)
+    if(tmp is not None):
+        msg += tmp
+
+print("".join(msg))
