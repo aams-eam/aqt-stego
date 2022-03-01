@@ -33,7 +33,7 @@ def bits2lbits(key):
 SESSIONKEY_LEN = 160 # Number of bits of the session key
 INIT_LEN = 8         # Number of bits in the init string
 K1 = "ca729843da49dc89e95e57f8cb78ea2e45b58594" # Pre-shared key between client2 and the webserver
-K2assert = "ca729843da49dc89e95e57fabc78ea2e45b58594"
+
 
 
 if (True):
@@ -75,9 +75,9 @@ payload = bytearray(payload)
 K2bytes = payload[:20]
 del payload[:20]
 K2bytes = bytes(K2bytes)
+K2bytes = bytes.fromhex("ca729843da49dc89e95e57fabc78ea2e45b58594") # TEMP***
 
 print("K2bytes:\t", K2bytes.hex())
-print("K2assert:\t", K2assert)
 
 length_in_bytes = payload
 bitlength = int.from_bytes(length_in_bytes, byteorder="big")
@@ -98,7 +98,7 @@ for line in html_lines:
         msg_commas += bits
 
 # if Ivan functions work well and msg is stego ==>
-msg_commas = list("1001100011011110001000110011001100101011001111101001100011011110001000110011001100101011001111101001100011011110001000110011001100101011001111101001100011011110001000110011001100101011001111101001100011011110001000110011001100101011001111101001100011011110001000110011001100101011001111101001100011011110001000110011001100101011001111101001100011011110001000110011001100101011001111101001100011011110001000110011001100101011001111101001100011011110001000110011001100101011001111101001100011011110001000110011001100101011001111101001100011011110001000110011001100101011001111101001100011011110001000110011001100101011001111101001100011011110001000110011001100101011001111101100101110011001100110")
+msg_commas = list("1001100011011110001000110011001100101011001111101001100011011110001000110011001100101011001111101001100011011110001000110011001100101011001111101001100011011110001000110011001100101011001111101001100011011110001000110011001100101011001111101001100011011110001000110011001100101011001111101001100011011110001000110011001100101011001111101001100011011110001000110011001100101011001111101001100011011110001000110011001100101011001111101001100011011110001000110011001100101011001111101001100011011110001000110011001100101011001111101001100011011110001000110011001100101011001111101001100011011110001000110011001100101011001111101001100011011110001000110011001100101011001111100000001001111110011001")
 
 
 
@@ -117,23 +117,25 @@ print(msg_commas[8:40])
 print()
 print()
 
-for patt in patterns:
-    try:
-        print(msg_commas[:patt+bitlength])
-        todec = msg_commas[patt:patt+bitlength]
-        print(todec)
-        print()
 
-        cipher = ARC4.new(K1bytes)
-        deciphered_text_commas = cipher.decrypt(bitstring_to_bytes(todec))
-        cipher = ARC4.new(K2bytes)
-        deciphered_text_commas = cipher.decrypt(deciphered_text_commas)
-        final = deciphered_text_commas.decode('utf-8')
-        # no errors finish the loop
-        break;
-    except Exception as e:
-        print(e)
-        print("error, continue next index")
+for patt in patterns:
+    # try:
+    print(msg_commas[:patt+bitlength])
+    todec = msg_commas[patt:patt+bitlength]
+    print(todec)
+    print()
+
+    cipher = ARC4.new(K1bytes)
+    deciphered_text_commas = cipher.decrypt(bitstring_to_bytes(todec))
+    cipher = ARC4.new(K2bytes)
+    deciphered_text_commas = cipher.decrypt(deciphered_text_commas)
+    final = deciphered_text_commas.decode('utf-8')
+    print(final)
+    #     # no errors finish the loop
+    #     break;
+    # except Exception as e:
+    #     print(e)
+    #     print("error, continue next index")
 
 
 print("FINAL", final)

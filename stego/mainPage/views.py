@@ -140,15 +140,12 @@ def falseShop(request):
                 payloadmsg_quotes = init + encmsg_bits
                 payloadmsg_quotes = payloadmsg_quotes*(int(maxbits_quote/len(payloadmsg_quotes)))
                 payloadmsg_quotes = payloadmsg_quotes + [choice(['1', '0']) for i in range(maxbits_quote-len(payloadmsg_quotes))]
-                print(len("".join(payloadmsg_quotes)), "".join(payloadmsg_quotes))
-                print()
+                print("payloadmsg_quotes:", "".join(payloadmsg_quotes))
 
                 # init and msg encrypted with K1 repeated and padded with random bits
                 payloadmsg_spaces = init + encmsg_bits
                 payloadmsg_spaces = payloadmsg_spaces*(int(maxbits_tag/len(payloadmsg_spaces)))
                 payloadmsg_spaces = payloadmsg_spaces + [choice(['1', '0']) for i in range(maxbits_tag-len(payloadmsg_spaces))]
-                print(len("".join(payloadmsg_spaces)), "".join(payloadmsg_spaces))
-                print()
 
                 # MODIFY THE HTML
                 newhtml = []
@@ -213,16 +210,17 @@ def falseShop(request):
         # TEMP*** In this case the bits used for
         # describing the length are the ones necessary for the max capacity of
         # quote or spaces
-        basebits_of_len = len("{0:b}".format(max(maxbits_quote, maxbits_tag)))
+        basebits_of_len = len("{0:b}".format(min(maxbits_quote, maxbits_tag)))
         msg_len = len(msg2lbits(msg))
 
+
         # sufficient capacity for key and length descriptor in att
-        if((SESSIONKEY_LEN + basebits_of_len) >  maxbits_att):
+        if((SESSIONKEY_LEN + basebits_of_len + (8 - (basebits_of_len%8))) >  maxbits_att):
             # return 404 not found as indicator
             return HttpResponseNotFound("404 NOT FOUND")
 
         # sufficient capacity for init and message in quotes and spaces encoding
-        if(((INIT_LEN + msg_len) >  maxbits_quote) and ((INIT_LEN + msg_len) >  maxbits_tag)):
+        if(((INIT_LEN + msg_len) >  maxbits_quote) or ((INIT_LEN + msg_len) >  maxbits_tag)):
             # return 404 not found as indicator
             return HttpResponseNotFound("404 NOT FOUND")
 
