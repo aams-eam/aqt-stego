@@ -21,7 +21,8 @@ from .pythonScripts.codification_commas import insertar_comillas as quote_encode
 from .pythonScripts.codification_spaces import insertar_tags as space_encode_line
 from .pythonScripts.decodification_commas import total_capacity as quot_total_capacity
 from .pythonScripts.decodification_spaces import total_capacity as space_total_capacity
-
+from .pythonScripts.remove_quotes import eliminar_comillas as remove_quote_line
+from .pythonScripts.remove_spaces import eliminar_tags as remove_space_line
 
 
 
@@ -177,6 +178,18 @@ def falseShop(request):
 
                 # Return modified page
                 htmlresponse = render(request, 'mainPage/indexExpanded.html')
+                #newmodifiedhtml_tags=[]
+                #newmodifiedhtml_quotes=[]
+                #remove_quote_line
+                #remove_space_line
+                '''for line in modifiedhtml :
+                    newmodifiedline=remove_quote_line(line)
+                    newmodifiedhtml_quotes.append(newmodifiedline)'''
+                '''for line in modifiedhtml :
+                    newmodifiedline=remove_space_line(line)
+                    newmodifiedhtml_tags.append(newmodifiedline)'''
+                #htmlresponse.content = newmodifiedhtml_tags
+                #htmlresponse.content = newmodifiedhtml_quotes
                 htmlresponse.content = modifiedhtml
 
                 # TEMP*** remove the file
