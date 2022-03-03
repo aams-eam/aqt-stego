@@ -24,7 +24,7 @@ def web_counter_tags(webpage_l):
 
 		'''print(tags)'''
 		webpage_number_tags.append(tags)
-return webpage_number_tags
+	return webpage_number_tags
 
 def web_counter_quotes(webpage_l):
 	webpage_number_quotes=[]
@@ -38,7 +38,7 @@ def web_counter_quotes(webpage_l):
 
 		'''print(tags)'''
 		webpage_number_quotes.append(tags)
-return webpage_number_quotes
+	return webpage_number_quotes
 
 def web_counter_characters(webpage_l):
 	webpage_length=[]
@@ -54,7 +54,7 @@ def web_counter_characters(webpage_l):
 
 		'''print(size)'''
 		webpage_length.append(size)
-return webpage_length
+	return webpage_length
 
 def web_counter_lines(webpage_l):
 	webpage_lines=[]
@@ -69,4 +69,4 @@ def web_counter_lines(webpage_l):
 
 		'''print(lines)'''
 		webpage_lines.append(lines)
-return webpage_lines
+	return webpage_lines
