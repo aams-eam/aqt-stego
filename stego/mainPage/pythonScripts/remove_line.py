@@ -1,7 +1,7 @@
 import os
 import random
 	
-def remove_line(html) :
+def remove_line_html(html) :
 	lin=list(html)
 	rand=random.randint(0,len(lin))
 	print(rand)
