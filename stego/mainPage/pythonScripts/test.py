@@ -19,6 +19,6 @@ webpage_number_tags=web_counter_tags(webpage_list)
 '''RECOJO EL NUMERO DE BITS QUE CABEN EN LOS QUOTES DE CADA PAGINA WEB'''
 webpage_number_quotes=web_counter_quotes(webpage_list)
 '''RECOJO EL NUMERO DE CARACTERES QUE HAY EN CADA PAGINA WEB'''
-return webpage_length=web_counter_characters(webpage_list)
+webpage_length=web_counter_characters(webpage_list)
 '''RECOJO EL NUMERO DE LINEAS DE CADA UNO DE LOS HTMLS DE LA PAGINA WEB'''
-return webpage_lines=web_counter_lines(webpage_list)
+webpage_lines=web_counter_lines(webpage_list)
