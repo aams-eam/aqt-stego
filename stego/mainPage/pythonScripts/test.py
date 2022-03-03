@@ -7,7 +7,7 @@ from statistics import web_counter_lines
 
 '''LEO EL HTML Y QUITO UNA LINEA AL AZAR'''
 with open(os.getcwd()+"\\responseContent.html") as fd:
-    content = fd.read()
+    content = fd.readlines()
 html_line_removed=remove_line_html(content)
 print(html_line_removed)
 
