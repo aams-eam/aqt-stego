@@ -88,11 +88,11 @@ def max_bits_line(line):
 
 
 
-def total_capacity(line):
+def total_capacity(html):
 
     maxbits = 0
 
-    for line in line.splitlines():
+    for line in html.splitlines():
         maxbits += max_bits_line(line)
 
     return maxbits
