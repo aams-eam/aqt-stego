@@ -151,7 +151,6 @@ def falseShop(request):
                 # GENERATE RANDOM SESSION KEY OF 160 BITS
                 random = get_random_bytes(16)
                 K2 = SHA.new(random).digest() # 160 bits key length
-                K2 = bytes.fromhex("ca729843da49dc89e95e57fabc78ea2e45b58594")
 
                 # CIPHER THE MESSAGE WITH THE K2 AND K1 USING RC4 ALGORITHM
                 cipher = ARC4.new(K2)
