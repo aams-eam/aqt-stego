@@ -76,7 +76,6 @@ payload = bytearray(payload)
 K2bytes = payload[:20]
 del payload[:20]
 K2bytes = bytes(K2bytes)
-K2bytes = bytes.fromhex("ca729843da49dc89e95e57fabc78ea2e45b58594") # TEMP***
 
 print("K2bytes:\t", K2bytes.hex())
 
