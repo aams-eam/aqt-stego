@@ -23,6 +23,7 @@ from .pythonScripts.decodification_commas import total_capacity as quot_total_ca
 from .pythonScripts.decodification_spaces import total_capacity as space_total_capacity
 from .pythonScripts.remove_quotes import eliminar_comillas as remove_quote_line
 from .pythonScripts.remove_tags import eliminar_tags as remove_space_line
+from .pythonScripts.remove_line import remove_line_html as remove_random_lines
 
 
 
@@ -36,6 +37,7 @@ K1 = "ca729843da49dc89e95e57f8cb78ea2e45b58594" # Pre-shared key between client2
 REMOVE_ALL_SPACES = True
 REMOVE_ALL_QUOTES = False
 REMOVE_RANDOM_LINES = False
+NUM_DELETED_LINES = 5
 
 
 ### FUNCTIONS ###
@@ -59,12 +61,6 @@ def remove_spaces_all(html):
         newmodifiedhtml_tags.append(newmodifiedline)
 
     return "\n".join(newmodifiedhtml_tags)
-
-
-# Enter html file in string
-# output html file with n random deleted lines
-def remove_random_lines(html, num_lines):
-    return html # TO-DO*** IMPLEMENT
 
 
 
