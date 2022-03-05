@@ -46,72 +46,46 @@ def web_counter_att(webpage_l):
 
     return numl
 
-
-
-def web_counter_tags(webpage_l):
-	webpage_number_tags=[]
-	for elem in webpage_l:
-		print(elem)
-		html = urlopen(elem)
-		ey=html.readlines()
-		tags=0
-		for line in ey:
-			tags+=contadortags(line)
-
+def web_counter_tags(elem):
+	'''print(elem)'''
+	html = urlopen(elem)
+	html_read=html.readlines()
+	tags=0
+	for line in html_read:
+		tags+=contadortags(line)
 		'''print(tags)'''
-		webpage_number_tags.append(tags)
-	return webpage_number_tags
+	return tags
 
-
-
-def web_counter_quotes(webpage_l):
-	webpage_number_quotes=[]
-	for elem in webpage_l:
-		print(elem)
-		html = urlopen(elem)
-		ey=html.readlines()
-		tags=0
-		for line in ey:
-			tags+=contadorcomillas(line)
-
+def web_counter_quotes(elem):
+	'''print(elem)'''
+	html = urlopen(elem)
+	html_read=html.readlines()
+	quotes=0
+	for line in html_read:
+		quotes+=contadorcomillas(line)
 		'''print(tags)'''
-		webpage_number_quotes.append(tags)
-	return webpage_number_quotes
+	return quotes
 
-
-
-def web_counter_characters(webpage_l):
-	webpage_length=[]
-	for elem in webpage_l:
-		print(elem)
-		html = urlopen(elem)
-		ey=html.readlines()
-		tags=0
-		size=0
-		for line in ey:
-			characters=list(line)
-			size+=len(characters)
-
+def web_counter_characters(elem):
+	'''print(elem)'''
+	html = urlopen(elem)
+	html_read=html.readlines()
+	size=0
+	for line in html_read:
+		characters=list(line)
+		size+=len(characters)
 		'''print(size)'''
-		webpage_length.append(size)
-	return webpage_length
+	return size
 
-
-
-def web_counter_lines(webpage_l):
-	webpage_lines=[]
-	for elem in webpage_l:
-		print(elem)
-		html = urlopen(elem)
-		ey=html.readlines()
-		tags=0
-		lines=0
-		for line in ey:
-			lines+=1
-
+def web_counter_lines(elem):
+	'''print(elem)'''
+	html = urlopen(elem)
+	html_read=html.readlines()
+	lines=0
+	for line in html_read:
+		lines+=1
 		'''print(lines)'''
-		webpage_lines.append(lines)
-	return webpage_lines
+	return lines
 
 
 
