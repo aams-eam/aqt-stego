@@ -40,30 +40,24 @@ def web_counter_att(htmlresponse):
 
     return num
 
-def web_counter_tags(elem):
+def web_counter_tags(html_read):
 	'''print(elem)'''
-	html = urlopen(elem)
-	html_read=html.readlines()
 	tags=0
 	for line in html_read:
 		tags+=contadortags(line)
 		'''print(tags)'''
 	return tags
 
-def web_counter_quotes(elem):
+def web_counter_quotes(html_read):
 	'''print(elem)'''
-	html = urlopen(elem)
-	html_read=html.readlines()
 	quotes=0
 	for line in html_read:
 		quotes+=contadorcomillas(line)
 		'''print(tags)'''
 	return quotes
 
-def web_counter_characters(elem):
+def web_counter_characters(html_read):
 	'''print(elem)'''
-	html = urlopen(elem)
-	html_read=html.readlines()
 	size=0
 	for line in html_read:
 		characters=list(line)
@@ -71,10 +65,8 @@ def web_counter_characters(elem):
 		'''print(size)'''
 	return size
 
-def web_counter_lines(elem):
+def web_counter_lines(html_read):
 	'''print(elem)'''
-	html = urlopen(elem)
-	html_read=html.readlines()
 	lines=0
 	for line in html_read:
 		lines+=1
@@ -113,18 +105,19 @@ def main():
         for elem in webpage_list:
 
             # hacer peticion html
-
+	    html = urlopen(elem)
+	    html_read=html.readlines()
             # calcular estadística solo de ese html
             print("COUNTING...")
-            lines.append(web_counter_lines(elem))
+            lines.append(web_counter_lines(html_read))
             print("lines counted")
-            characters.append(web_counter_characters(elem))
+            characters.append(web_counter_characters(html_read))
             print("characters counted")
-            att_cap.append(web_counter_att(elem))
+            att_cap.append(web_counter_att(html_read))
             print("attributes counted")
-            quotes_cap.append(web_counter_quotes(elem))
+            quotes_cap.append(web_counter_quotes(html_read))
             print("quotes counted")
-            tag_cap.append(web_counter_tags(elem))
+            tag_cap.append(web_counter_tags(html_read))
             print("tags counted")
 
             print(characters)
