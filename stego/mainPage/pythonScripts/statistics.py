@@ -9,13 +9,6 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import re
 
-try:
-    # For Python 3.0 and later
-    from urllib.request import urlopen
-except ImportError:
-    # Fall back to Python 2's urllib2
-    from urllib2 import urlopen
-
 
 def find_tags_line (input):
 
@@ -23,95 +16,54 @@ def find_tags_line (input):
     return matches
 
 
-def web_counter_att(webpage_l):
-    webpage_number_tags=[]
-    numl = []
-    for elem in webpage_l:
-        print(elem)
-        r = requests.get(elem)
-        htmlresponse = html.unescape(r.text)
+def web_counter_att(htmlresponse):
 
-        # expand tags in one line to multiple lines
-        tags = []
-        for line in htmlresponse.splitlines():
-            tags += find_tags_line(line)
+    num = 0 # total num of attributes
 
-        # count bits in attributes base on the expanded lines
-        num = 0
-        for t in tags:
-            complete = "<"+t+">"
-            num += max_bits_att_line(complete)
+    # expand tags in one line to multiple lines
+    tags = []
+    for line in htmlresponse:
+        tags += find_tags_line(line)
 
-        numl.append(num)
+    # count bits in attributes base on the expanded lines
+    for t in tags:
+        complete = "<"+t+">"
+        num += max_bits_att_line(complete)
 
-    return numl
+    return num
 
-
-
-def web_counter_tags(webpage_l):
-	webpage_number_tags=[]
-	for elem in webpage_l:
-		print(elem)
-		html = urlopen(elem)
-		ey=html.readlines()
-		tags=0
-		for line in ey:
-			tags+=contadortags(line)
-
+def web_counter_tags(html_read):
+	'''print(elem)'''
+	tags=0
+	for line in html_read:
+		tags+=contadortags(line)
 		'''print(tags)'''
-		webpage_number_tags.append(tags)
-	return webpage_number_tags
+	return tags
 
-
-
-def web_counter_quotes(webpage_l):
-	webpage_number_quotes=[]
-	for elem in webpage_l:
-		print(elem)
-		html = urlopen(elem)
-		ey=html.readlines()
-		tags=0
-		for line in ey:
-			tags+=contadorcomillas(line)
-
+def web_counter_quotes(html_read):
+	'''print(elem)'''
+	quotes=0
+	for line in html_read:
+		quotes+=contadorcomillas(line)
 		'''print(tags)'''
-		webpage_number_quotes.append(tags)
-	return webpage_number_quotes
+	return quotes
 
-
-
-def web_counter_characters(webpage_l):
-	webpage_length=[]
-	for elem in webpage_l:
-		print(elem)
-		html = urlopen(elem)
-		ey=html.readlines()
-		tags=0
-		size=0
-		for line in ey:
-			characters=list(line)
-			size+=len(characters)
-
+def web_counter_characters(html_read):
+	'''print(elem)'''
+	size=0
+	for line in html_read:
+		characters=list(line)
+		size+=len(characters)
 		'''print(size)'''
-		webpage_length.append(size)
-	return webpage_length
+	return size
 
-
-
-def web_counter_lines(webpage_l):
-	webpage_lines=[]
-	for elem in webpage_l:
-		print(elem)
-		html = urlopen(elem)
-		ey=html.readlines()
-		tags=0
-		lines=0
-		for line in ey:
-			lines+=1
-
+def web_counter_lines(html_read):
+	'''print(elem)'''
+	lines=0
+	for line in html_read:
+		lines+=1
 		'''print(lines)'''
-		webpage_lines.append(lines)
-	return webpage_lines
+	return lines
 
 
 
@@ -132,10 +84,9 @@ def main():
 
         print("50topStatistics.csv does not exist, creating...")
 
-        webpage_list=['https://www.google.com/','https://www.youtube.com/','https://www.facebook.com/']#,'https://twitter.com/','https://www.instagram.com/','http://www.baidu.com/','https://www.wikipedia.org/','https://yandex.ru/','https://es.yahoo.com/','https://www.elmundo.es/','https://www.whatsapp.com/','https://www.netflix.com/es/','https://www.uc3m.es/Inicio','https://vine.co/','https://www.yahoo.co.jp/','https://outlook.live.com/owa/','https://as.com/','https://zoom.us/','https://www.reddit.com/','https://elpais.com/','https://www.office.com/','https://www.spotify.com/es/','https://vk.com/','https://www.hola.com/','https://www.twitch.tv/','https://www.elperiodico.com/es/','https://www.naver.com/','https://www.bing.com/','https://www.roblox.com/','https://duckduckgo.com/','https://www.elespanol.com/','https://mail.ru/','https://www.pinterest.es/','https://www.defensa.gob.es/','https://www.qq.com/','https://news.yahoo.co.jp/','https://www.fandom.com/','https://www.msn.com/es-es/','https://www.google.com.br/','https://www.globo.com/','https://www.ebay.com/','https://www.rtve.es/','https://www.movistar.es/','https://weather.com/es-ES/tiempo/hoy/l/SPXX0050:1:SP?Goto=Redirected','https://ok.ru/','https://ok.ru/','https://www.bbc.com/','https://www.marca.com/','https://www.sport.es/es/','https://www.casadellibro.com/','https://www.w3schools.com/']
+        webpage_list=['https://www.google.com/','https://www.youtube.com/','https://www.facebook.com/','https://twitter.com/','https://www.instagram.com/','http://www.baidu.com/','https://www.wikipedia.org/','https://yandex.ru/','https://es.yahoo.com/','https://www.elmundo.es/','https://www.whatsapp.com/','https://www.netflix.com/es/','https://www.uc3m.es/Inicio','https://vine.co/','https://www.yahoo.co.jp/','https://outlook.live.com/owa/','https://as.com/','https://zoom.us/','https://www.reddit.com/','https://elpais.com/','https://www.office.com/','https://www.spotify.com/es/','https://vk.com/','https://www.hola.com/','https://www.twitch.tv/','https://www.elperiodico.com/es/','https://www.naver.com/','https://www.bing.com/','https://www.roblox.com/','https://duckduckgo.com/','https://www.elespanol.com/','https://mail.ru/','https://www.pinterest.es/','https://www.defensa.gob.es/','https://www.qq.com/','https://news.yahoo.co.jp/','https://www.fandom.com/','https://www.msn.com/es-es/','https://www.google.com.br/','https://www.globo.com/','https://www.ebay.com/','https://www.rtve.es/','https://www.movistar.es/','https://weather.com/es-ES/tiempo/hoy/l/SPXX0050:1:SP?Goto=Redirected','https://ok.ru/','https://ok.ru/','https://www.bbc.com/','https://www.marca.com/','https://www.sport.es/es/','https://www.casadellibro.com/','https://www.w3schools.com/']
 
 
-        # MODIFICAR IVAN
         lines = []
         characters = []
         att_cap = []
@@ -144,26 +95,27 @@ def main():
 
         for elem in webpage_list:
 
-            # hacer peticion html
+            print("URL:", elem.upper())
 
+            # hacer peticion html
+            r = requests.get(elem)
+            htmlresponse = html.unescape(r.text)
+            html_lines = htmlresponse.splitlines()
+            html_linesb = [l.encode('utf-8') for l in html_lines]
             # calcular estadística solo de ese html
             print("COUNTING...")
-            lines.append(web_counter_lines(elem))
+            lines.append(web_counter_lines(html_linesb))
             print("lines counted")
-            characters.append(web_counter_characters(elem))
+            characters.append(web_counter_characters(html_linesb))
             print("characters counted")
-            att_cap.append(web_counter_att(elem))
+            att_cap.append(web_counter_att(html_lines))
             print("attributes counted")
-            quotes_cap.append(web_counter_quotes(elem))
+            quotes_cap.append(web_counter_quotes(html_linesb))
             print("quotes counted")
-            tag_cap.append(web_counter_tags(elem))
+            tag_cap.append(web_counter_tags(html_linesb))
             print("tags counted")
-
-            print(characters)
-            print(lines)
-            print(quotes_cap)
-            print(tag_cap)
-        # MODIFICAR IVAN
+            print()
+            print()
 
         df = pd.DataFrame({"page": webpage_list,"characters": characters,"lines": lines, "att_cap": att_cap, "quotes_cap": quotes_cap, "tag_cap": tag_cap})
         df.to_csv("50topStatistics.csv", index=False)
@@ -182,15 +134,22 @@ def main():
     df.reset_index(drop=True, inplace=True)
     print(df[['totalbits', 'att_percentage', 'quotes_percentage', 'tag_percentage']].head())
 
-
-    plt.plot(df.index.to_list(), df.att_percentage.to_list(), label="att encoding")
-    plt.plot(df.index.to_list(), df.quotes_percentage.to_list(), label="quote encoding")
-    plt.plot(df.index.to_list(), df.tag_percentage.to_list(), label="tag encoding")
-    plt.xlabel("Webpage index")
-    plt.ylabel("encoding capacity over total capacity (%)")
-    plt.title("Average capacity of encoding in top 50 visited pages")
-    plt.legend()
-    plt.grid()
+    fig,ax = plt.subplots(3, figsize=(12,6))
+    ax[0].plot(df.index.to_list(), df.att_percentage.to_list(), color="green", label="att encoding")
+    ax[1].plot(df.index.to_list(), df.quotes_percentage.to_list(), color="red", label="quote encoding")
+    ax[2].plot(df.index.to_list(), df.tag_percentage.to_list(), color="orange", label="tag encoding")
+    ax[0].axhline(df.att_percentage.mean(), color="green", linestyle="dashed", label="att encoding mean")
+    ax[1].axhline(df.quotes_percentage.mean(), color="red", linestyle="dashed", label="quote encoding mean")
+    ax[2].axhline(df.tag_percentage.mean(), color="orange", linestyle="dashed", label="tag encoding mean")
+    ax[2].set_xlabel("Webpage index")
+    ax[1].set_ylabel("encoding capacity over total capacity (%)")
+    ax[0].set_title("Average capacity of encoding in top 50 visited pages")
+    ax[0].grid(True)
+    ax[1].grid(True)
+    ax[2].grid(True)
+    ax[0].legend()
+    ax[1].legend()
+    ax[2].legend()
     plt.show()
 
 
