@@ -8,6 +8,7 @@ import html
 import pandas as pd
 import matplotlib.pyplot as plt
 import re
+import numpy as np
 
 
 def find_tags_line (input):
@@ -138,12 +139,37 @@ def main():
     ax[0].plot(df.index.to_list(), df.att_percentage.to_list(), color="green", label="att encoding")
     ax[1].plot(df.index.to_list(), df.quotes_percentage.to_list(), color="red", label="quote encoding")
     ax[2].plot(df.index.to_list(), df.tag_percentage.to_list(), color="orange", label="tag encoding")
+    ax[0].set_yticks(np.arange(0, df.att_percentage.max(), 0.05))
+    ax[1].set_yticks(np.arange(0, df.quotes_percentage.max(), 0.075))
+    ax[2].set_yticks(np.arange(0, df.tag_percentage.max(), 0.1))
     ax[0].axhline(df.att_percentage.mean(), color="green", linestyle="dashed", label="att encoding mean")
     ax[1].axhline(df.quotes_percentage.mean(), color="red", linestyle="dashed", label="quote encoding mean")
     ax[2].axhline(df.tag_percentage.mean(), color="orange", linestyle="dashed", label="tag encoding mean")
     ax[2].set_xlabel("Webpage index")
     ax[1].set_ylabel("Encoding capacity over total bits capacity (%)")
-    ax[0].set_title("Capacity of encoding in top 50 visited pages")
+    ax[0].set_title("Usage percentage over total capacity in top 50 most visited pages")
+    ax[0].grid(True)
+    ax[1].grid(True)
+    ax[2].grid(True)
+    ax[0].legend()
+    ax[1].legend()
+    ax[2].legend()
+    plt.show()
+
+
+    fig,ax = plt.subplots(3, figsize=(12,6))
+    ax[0].plot(df.index.to_list(), df.att_cap.to_list(), color="green", label="att encoding")
+    ax[1].plot(df.index.to_list(), df.quotes_cap.to_list(), color="red", label="quote encoding")
+    ax[2].plot(df.index.to_list(), df.tag_cap.to_list(), color="orange", label="tag encoding")
+    ax[0].set_yticks(np.arange(0, df.att_cap.max(), 1000))
+    ax[1].set_yticks(np.arange(0, df.quotes_cap.max(), 2500))
+    ax[2].set_yticks(np.arange(0, df.tag_cap.max(), 5000))
+    ax[0].axhline(df.att_cap.mean(), color="green", linestyle="dashed", label="att encoding mean")
+    ax[1].axhline(df.quotes_cap.mean(), color="red", linestyle="dashed", label="quote encoding mean")
+    ax[2].axhline(df.tag_cap.mean(), color="orange", linestyle="dashed", label="tag encoding mean")
+    ax[2].set_xlabel("Webpage index")
+    ax[1].set_ylabel("bits")
+    ax[0].set_title("Total capacity in bits for top 50 most visited pages")
     ax[0].grid(True)
     ax[1].grid(True)
     ax[2].grid(True)
