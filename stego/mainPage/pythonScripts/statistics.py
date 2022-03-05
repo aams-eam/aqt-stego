@@ -23,28 +23,22 @@ def find_tags_line (input):
     return matches
 
 
-def web_counter_att(webpage_l):
-    webpage_number_tags=[]
-    numl = []
-    for elem in webpage_l:
-        print(elem)
-        r = requests.get(elem)
-        htmlresponse = html.unescape(r.text)
+def web_counter_att(htmlresponse):
 
-        # expand tags in one line to multiple lines
-        tags = []
-        for line in htmlresponse.splitlines():
-            tags += find_tags_line(line)
 
-        # count bits in attributes base on the expanded lines
-        num = 0
-        for t in tags:
-            complete = "<"+t+">"
-            num += max_bits_att_line(complete)
+    num = 0 # total num of attributes
+    
+    # expand tags in one line to multiple lines
+    tags = []
+    for line in htmlresponse.splitlines():
+        tags += find_tags_line(line)
 
-        numl.append(num)
+    # count bits in attributes base on the expanded lines
+    for t in tags:
+        complete = "<"+t+">"
+        num += max_bits_att_line(complete)
 
-    return numl
+    return num
 
 def web_counter_tags(elem):
 	'''print(elem)'''
