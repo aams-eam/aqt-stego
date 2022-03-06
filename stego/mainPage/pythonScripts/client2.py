@@ -7,6 +7,7 @@ from decodification_commas import total_capacity as total_capacity_commas
 from decodification_spaces import retrieve_msg_spaces
 from decodification_spaces import total_capacity as total_capacity_spaces
 from Crypto.Cipher import ARC4
+import sys
 
 
 
@@ -14,8 +15,10 @@ from Crypto.Cipher import ARC4
 ### FUNCTIONS
 def find_init(pattern, string):
     patterns = []
+    pattern = '(?=('+pattern+'))'
+
     for match in re.finditer(pattern, string):
-        patterns.append(match.end())
+        patterns.append(match.end(1))
     return patterns
 
 
@@ -30,23 +33,34 @@ def bits2lbits(key):
     kbits = [bit for byte in byte_list for bit in byte]
     return kbits
 
+# Program to find most frequent
+# element in a list
+def most_frequent(vlist):
+	return max(set(vlist), key = vlist.count)
+
+
+# GLOBAL VARIABLES
 SESSIONKEY_LEN = 160 # Number of bits of the session key
 INIT_LEN = 8         # Number of bits in the init string
 K1 = "ca729843da49dc89e95e57f8cb78ea2e45b58594" # Pre-shared key between client2 and the webserver
+init = ['1', '0', '1', '0', '1', '0', '1', '0'] # Indicator of start of message
+
+# CONFIGURATIONS VARIABLES
+PASSWORD = "1234"
 
 
-
-if (True):
-    payload = {
-            'pass': '1234'
-            }
-    r = requests.get("http://127.0.0.1:8000/shop", params=payload)
-else:
-    r = requests.get('http://127.0.0.1:8000/shop')
+payload = {
+        'pass': PASSWORD
+        }
+r = requests.get("http://127.0.0.1:8000/shop", params=payload)
+print("STATUS_CODE: ", r.status_code)
+if(r.status_code == 404):
+    print("There is no secret message with that password!")
+    sys.exit(0)
 
 
 htmlresponse = html.unescape(r.text)
-print(htmlresponse)
+print("HTML_PAGE:\n", len(htmlresponse))
 html_lines = htmlresponse.splitlines()
 
 att_bits = []
@@ -81,13 +95,7 @@ print("K2bytes:\t", K2bytes.hex())
 
 length_in_bytes = payload
 bitlength = int.from_bytes(length_in_bytes, byteorder="big")
-print(bitlength)
-
-init = ['1', '0', '0', '1', '1', '0', '0', '0'] # Indicator of start of message
-
-# TO-DO*** comprobar que el encode de ivan y el decode de Pablo funcionan seguidos
-# TO-DO*** comprobar que el countbits de ivan y Pablo son iguales
-# print("\n".join(html_lines))
+print("MESSAGE_LENGTH:", bitlength)
 
 
 ### QUOTATION MARKS
@@ -97,109 +105,69 @@ for line in html_lines:
     if(len(bits)>0):
         msg_commas += bits
 
-# if Ivan functions work well and msg is stego ==>
-# msg_commas = list("1001100011011110001000110011001100101011001111101001100011011110001000110011001100101011001111101001100011011110001000110011001100101011001111101001100011011110001000110011001100101011001111101001100011011110001000110011001100101011001111101001100011011110001000110011001100101011001111101001100011011110001000110011001100101011001111101001100011011110001000110011001100101011001111101001100011011110001000110011001100101011001111101001100011011110001000110011001100101011001111101001100011011110001000110011001100101011001111101001100011011110001000110011001100101011001111101001100011011110001000110011001100101011001111101001100011011110001000110011001100101011001111100000001001111110011001")
-
 
 
 msg_commas = "".join(msg_commas)
 print(msg_commas)
-print("Total bits:", len(msg_commas))
 patterns = find_init("".join(init), msg_commas)
+
 
 #Decipher
 counter = 0
-# cipher = ARC4.new(K1bytes)
-
-
-print(msg_commas[:8])
-print(msg_commas[8:40])
-print()
-print()
-
-all = []
+all_commas = []
 for patt in patterns:
     try:
-        print(msg_commas[:patt+bitlength])
         todec = msg_commas[patt:patt+bitlength]
-        print(todec)
-        print()
 
         cipher = ARC4.new(K1bytes)
         deciphered_text_commas = cipher.decrypt(bitstring_to_bytes(todec))
         cipher = ARC4.new(K2bytes)
         deciphered_text_commas = cipher.decrypt(deciphered_text_commas)
         final = deciphered_text_commas.decode('utf-8')
-        all.append(final)
+        all_commas.append(final)
     except Exception as e:
-        print(e)
-        print("error, continue next index")
+        pass
 
 
-print("ALL:", all)
+print("ALL_COMMAS:", all_commas)
 
 
+print()
+print("SPACES TAGS")
+### SPACES TAGS
+msg_spaces = []
+for line in html_lines:
+    bits = retrieve_msg_spaces(line)
+    if(len(bits)>0):
+        msg_spaces += bits
 
 
-# while (True):
-#     pos = patterns[counter] + 1
-#     for i in range(pos, pos+length):
-#         ciphered_text_commas.append(msg_commas[i])
-#
-#     deciphered_text_commas = cipher.decrypt(bitstring_to_bytes("".join(ciphered_text_commas)))
-#     plaintext = deciphered_text_commas.decode("utf-8")
-#
-#     if (plaintext == "stego"):
-#         break
-#     else:
-#         counter = counter + 1
-#
-#
-# print("FINAL", plaintext)
+msg_spaces = "".join(msg_spaces)
+patterns = find_init("".join(init), msg_spaces)
+
+#Decipher
+counter = 0
+all_spaces = []
+for patt in patterns:
+    try:
+        todec = msg_spaces[patt:patt+bitlength]
+
+        cipher = ARC4.new(K1bytes)
+        deciphered_text_spaces = cipher.decrypt(bitstring_to_bytes(todec))
+        cipher = ARC4.new(K2bytes)
+        deciphered_text_spaces = cipher.decrypt(deciphered_text_spaces)
+        final = deciphered_text_spaces.decode('utf-8')
+        all_spaces.append(final)
+    except Exception as e:
+        pass
 
 
+print("ALL_SPACES:", all_spaces)
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-# ### SPACES
-# msg_spaces = []
-# for line in html_lines:
-#     tmp = retrieve_msg_spaces(line)
-#     if(len(tmp) > 0):
-#         msg_spaces += tmp
-#
-# patterns = find_init(init, msg_spaces)
-# #Decipher
-# counter = 0
-# cipher = ARC4.new(K2bytes)
-#
-# while (True):
-#     pos = patterns[counter] + 1
-#     for i in range(pos, pos+length):
-#         ciphered_text_spaces.append(msg_spaces[i])
-#
-#     deciphered_text_spaces = cipher.decrypt(bitstring_to_bytes("".join(ciphered_text_spaces)))
-#     plaintext = deciphered_text_spaces.decode("utf-8")
-#
-#     if (plaintext == "stego"):
-#         break
-#     else:
-#         counter = counter + 1
+print()
+finall = all_commas+all_spaces
+if(len(finall)>0):
+    final_message = most_frequent(finall)
+    print("FINAL MESSAGE: \"" + final_message + "\"")
+else:
+    print("MESSAGE COULD NOT BE DECODED!!")

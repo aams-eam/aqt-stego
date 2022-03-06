@@ -31,10 +31,11 @@ from .pythonScripts.remove_line import remove_line_html as remove_random_lines
 SESSIONKEY_LEN = 160 # Number of bits of the session key
 INIT_LEN = 8         # Number of bits in the init string
 K1 = "ca729843da49dc89e95e57f8cb78ea2e45b58594" # Pre-shared key between client2 and the webserver
+init = ['1', '0', '1', '0', '1', '0', '1', '0'] # Indicator of start of message
 
 
 ### CONFIGURATION VARIABLES ###
-REMOVE_ALL_SPACES = True
+REMOVE_ALL_SPACES = False
 REMOVE_ALL_QUOTES = False
 REMOVE_RANDOM_LINES = False
 NUM_DELETED_LINES = 5
@@ -133,9 +134,6 @@ def falseShop(request):
                 maxbits_att = att_total_capacity(actualhtml) # Total capacity
                 maxbits_quote = quot_total_capacity(actualhtml) # capacity of space encoding
                 maxbits_tag = space_total_capacity(actualhtml) # capacity of quotes encoding
-                # TEMP*** In this case the bits used for
-                # describing the length are the ones necessary for the max capacity of
-                # quote or spaces
                 basebits_of_len = len("{0:b}".format(min(maxbits_quote, maxbits_tag)))
 
 
@@ -159,7 +157,6 @@ def falseShop(request):
                 cipher = ARC4.new(bytes.fromhex(K1))
                 encK2length = cipher.encrypt(K2length) # Encrypt the key with the length concatenated
 
-                init = ['1', '0', '0', '1', '1', '0', '0', '0'] # Indicator of start of message
                 encmsg_bits = bytes2lbits(encmsg) # encoded msg to list of bits
                 encK2length_bits = bytes2lbits(encK2length) # encoded K2 concatenated with length
 
@@ -174,8 +171,14 @@ def falseShop(request):
 
                 # init and msg encrypted with K1 repeated and padded with random bits
                 payloadmsg_spaces = init + encmsg_bits
+                print()
+                print("".join(payloadmsg_spaces))
                 payloadmsg_spaces = payloadmsg_spaces*(int(maxbits_tag/len(payloadmsg_spaces)))
+                print()
+                print("".join(payloadmsg_spaces))
                 payloadmsg_spaces = payloadmsg_spaces + [choice(['1', '0']) for i in range(maxbits_tag-len(payloadmsg_spaces))]
+                print()
+                print("".join(payloadmsg_spaces))
 
                 # MODIFY THE HTML
                 newhtml = []
@@ -209,21 +212,20 @@ def falseShop(request):
                 # PROXY SIMULATION
                 if(REMOVE_ALL_SPACES):
                     modifiedhtml = remove_spaces_all(modifiedhtml)
-                elif(REMOVE_ALL_QUOTES):
+                if(REMOVE_ALL_QUOTES):
                     modifiedhtml = remove_quotes_all(modifiedhtml)
-                elif(REMOVE_RANDOM_LINES):
+                if(REMOVE_RANDOM_LINES):
                     modifiedhtml = remove_random_lines(modifiedhtml, NUM_DELETED_LINES)
 
-
+                print(len(modifiedhtml))
                 # Return modified page
                 htmlresponse = render(request, 'mainPage/indexExpanded.html')
                 htmlresponse.content = modifiedhtml
 
-                # TEMP*** remove the file
                 return htmlresponse
 
             except FileNotFoundError:
-                return render(request, 'mainPage/indexExpanded.html')
+                return HttpResponseNotFound("404 NOT FOUND")
 
         return render(request, 'mainPage/indexExpanded.html')
 
@@ -247,7 +249,6 @@ def falseShop(request):
         maxbits_quote = quot_total_capacity(actualhtml) # capacity of space encoding
         maxbits_tag = space_total_capacity(actualhtml) # capacity of quotes encoding
 
-        # TEMP*** In this case the bits used for
         # describing the length are the ones necessary for the max capacity of
         # quote or spaces
         basebits_of_len = len("{0:b}".format(min(maxbits_quote, maxbits_tag)))

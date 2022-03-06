@@ -71,8 +71,6 @@ def num_att2bits(num_att):
 
     num_bits = 0
 
-    # TEMP*** apply log base 2 to (line!)
-    # TEMP*** then create new algorithm in encode_line() func
     if(num_att > 1):
         num_bits = num_att-1
 
