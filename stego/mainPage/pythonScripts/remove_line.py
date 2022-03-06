@@ -1,6 +1,6 @@
 import os
 import random
-import t
+import time
 
 
 def remove_line_html(html,number_lines) :
