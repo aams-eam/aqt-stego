@@ -2,13 +2,19 @@ import re
 import os
 from codification_commas import insertar_comillas
 from codification_spaces import insertar_tags
-from decodification_spaces import retrieve_msg_spaces
+from decodification_spaces import retrieve_msg_spaces, tag_lines
 from decodification_commas import retrieve_msg_commas
+from remove_line import remove_line_html
+import random
+import time
 
 
 
 def main():
 
+    random.seed(time.process_time())
+    NUM_LINES = random.randint(0,1313)
+    # NUM_LINES = 5
 
     payloadmsg_quotes = "1001100000110101010100111001110010000110101110111001100000110101010100111001110010000110101110111001100000110101010100111001110010000110101110111001100000110101010100111001110010000110101110111001100000110101010100111001110010000110101110111001100000110101010100111001110010000110101110111001100000110101010100111001110010000110101110111001100000110101010100111001110010000110101110111001100000110101010100111001110010000110101110111001100000110101010100111001110010000110101110111001100000110101010100111001110010000110101110111001100000110101010100111001110010000110101110111001100000110101010100111001110010000110101110111001100000110101010100111001110010000110101110110000110110111101110111"
 
@@ -19,29 +25,16 @@ def main():
 
 
     with open("/home/alexms/Desktop/MASTER/ASIGNATURAS/SEMESTER2/PERSISTENT_THREATS_INFORMATION_LEAKAGE/steganographyLab/TESTS/pythonScripts/input.html") as fd:
+        # html = fd.readlines()
         html = fd.read()
 
+    # newhtml = remove_line_html(html.splitlines(), NUM_LINES)
+    newhtml = remove_line_html(html, NUM_LINES)
 
-    # ENCODE pyaload msg multiple times with quotes codification
-    newhtml = []
-    for line in html.splitlines():
-
-        newline = insertar_tags(line, choose_list)
-        newhtml.append(newline)
-
-
-    # print("\n".join(newhtml))
-    ### QUOTATION MARKS
-    output = []
-    for line in newhtml:
-        bits = retrieve_msg_spaces(line)
-        if(len(bits)>0):
-            output += bits
-
-    output = "".join(output)
-    print(choose)
-    print(output)
-    print(choose == output)
+    print(len(html.splitlines()), (len(newhtml.splitlines())+NUM_LINES))
+    print(len(html.splitlines())==(len(newhtml.splitlines())+NUM_LINES))
+    print(NUM_LINES)
+    assert len(html.splitlines()) == (len(newhtml.splitlines())+NUM_LINES)
 
 
 

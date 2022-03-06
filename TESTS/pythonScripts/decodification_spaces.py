@@ -31,17 +31,19 @@ def retrieve_msg_spaces (input):
     if(tag_lines(input) > 0):
         p = re.compile(re_1)
         for match in p.finditer(input):
+            print("<", input[match.end()])
             if(input[match.end()] == " "):
-                double[match.end()] = "1"
+                double[match.end()-1] = "1"
             else:
-                double[match.end()] = "0"
+                double[match.end()-1] = "0"
 
         p = re.compile(re_2)
         for match in p.finditer(input):
+            print(">", input[match.start() - 1])
             if(input[match.start() - 1] == " "):
-                double[match.start() - 1] = "1"
+                double[match.start()] = "1"
             else:
-                double[match.start() - 1] = "0"
+                double[match.start()] = "0"
 
         sdouble = sorted(double.items())
 
