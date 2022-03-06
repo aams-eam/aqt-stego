@@ -43,7 +43,7 @@ def most_frequent(vlist):
 SESSIONKEY_LEN = 160 # Number of bits of the session key
 INIT_LEN = 8         # Number of bits in the init string
 K1 = "ca729843da49dc89e95e57f8cb78ea2e45b58594" # Pre-shared key between client2 and the webserver
-init = ['1', '0', '1', '0', '1', '0', '1', '0'] # Indicator of start of message
+init = ['1', '0', '0', '1', '1', '0', '0', '0'] # Indicator of start of message
 
 # CONFIGURATIONS VARIABLES
 PASSWORD = "1234"
@@ -53,14 +53,14 @@ payload = {
         'pass': PASSWORD
         }
 r = requests.get("http://127.0.0.1:8000/shop", params=payload)
-print("STATUS_CODE: ", r.status_code)
+print("STATUS_CODE:\t\t", r.status_code)
 if(r.status_code == 404):
     print("There is no secret message with that password!")
     sys.exit(0)
 
 
 htmlresponse = html.unescape(r.text)
-print("HTML_PAGE:\n", len(htmlresponse))
+print("HTML_PAGE_CHARS:\t", len(htmlresponse))
 html_lines = htmlresponse.splitlines()
 
 att_bits = []
@@ -91,11 +91,13 @@ K2bytes = payload[:20]
 del payload[:20]
 K2bytes = bytes(K2bytes)
 
-print("K2bytes:\t", K2bytes.hex())
+print("K2bytes:\t\t", K2bytes.hex())
 
 length_in_bytes = payload
 bitlength = int.from_bytes(length_in_bytes, byteorder="big")
-print("MESSAGE_LENGTH:", bitlength)
+print("MESSAGE_LENGTH:\t\t", bitlength)
+print("QUOTE_CAPACITY_MESSAGE:\t", int(maxbits_quote/(bitlength+8)))
+print("SPACE_CAPACITY_MESSAGE:\t", int(maxbits_tag/(bitlength+8)))
 
 
 ### QUOTATION MARKS
@@ -108,7 +110,6 @@ for line in html_lines:
 
 
 msg_commas = "".join(msg_commas)
-print(msg_commas)
 patterns = find_init("".join(init), msg_commas)
 
 
@@ -129,11 +130,10 @@ for patt in patterns:
         pass
 
 
-print("ALL_COMMAS:", all_commas)
+print("ALL_COMMAS_COUNT:\t", len(all_commas))
+print("ALL_COMMAS:\t\t", all_commas)
 
 
-print()
-print("SPACES TAGS")
 ### SPACES TAGS
 msg_spaces = []
 for line in html_lines:
@@ -143,6 +143,7 @@ for line in html_lines:
 
 
 msg_spaces = "".join(msg_spaces)
+
 patterns = find_init("".join(init), msg_spaces)
 
 #Decipher
@@ -162,12 +163,15 @@ for patt in patterns:
         pass
 
 
-print("ALL_SPACES:", all_spaces)
+print("ALL_SPACES_COUNT:\t", len(all_spaces))
+print("ALL_SPACES:\t\t", all_spaces)
 
 print()
 finall = all_commas+all_spaces
 if(len(finall)>0):
     final_message = most_frequent(finall)
-    print("FINAL MESSAGE: \"" + final_message + "\"")
+    total_repeated = [m for m in finall if(m==final_message)]
+    print("FINAL MESSAGE:\t\"" + final_message + "\"")
+    print("TOTAL_REPEATED:\t", len(total_repeated))
 else:
     print("MESSAGE COULD NOT BE DECODED!!")

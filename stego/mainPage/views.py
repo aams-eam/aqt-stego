@@ -25,13 +25,16 @@ from .pythonScripts.remove_quotes import eliminar_comillas as remove_quote_line
 from .pythonScripts.remove_tags import eliminar_tags as remove_space_line
 from .pythonScripts.remove_line import remove_line_html as remove_random_lines
 
+from .pythonScripts.decodification_spaces import retrieve_msg_spaces # TEMP***
+from .pythonScripts.decodification_commas import retrieve_msg_commas # TEMP***
+
 
 
 ### GLOBAL VARIABLES ###
 SESSIONKEY_LEN = 160 # Number of bits of the session key
 INIT_LEN = 8         # Number of bits in the init string
 K1 = "ca729843da49dc89e95e57f8cb78ea2e45b58594" # Pre-shared key between client2 and the webserver
-init = ['1', '0', '1', '0', '1', '0', '1', '0'] # Indicator of start of message
+init = ['1', '0', '0', '1', '1', '0', '0', '0'] # Indicator of start of message
 
 
 ### CONFIGURATION VARIABLES ###
@@ -171,14 +174,9 @@ def falseShop(request):
 
                 # init and msg encrypted with K1 repeated and padded with random bits
                 payloadmsg_spaces = init + encmsg_bits
-                print()
-                print("".join(payloadmsg_spaces))
                 payloadmsg_spaces = payloadmsg_spaces*(int(maxbits_tag/len(payloadmsg_spaces)))
-                print()
-                print("".join(payloadmsg_spaces))
                 payloadmsg_spaces = payloadmsg_spaces + [choice(['1', '0']) for i in range(maxbits_tag-len(payloadmsg_spaces))]
-                print()
-                print("".join(payloadmsg_spaces))
+
 
                 # MODIFY THE HTML
                 newhtml = []
@@ -203,10 +201,23 @@ def falseShop(request):
                     newline = quote_encode_line(line, payloadmsg_quotes)
                     newhtml3.append(newline)
 
-
-
                 # Store the new html in file with name of the pass
                 modifiedhtml = "\n".join(newhtml3)
+
+
+                ### QUOTATION MARKS
+                msg_commas = []
+                for line in newhtml3:
+                    bits = retrieve_msg_commas(line)
+                    if(len(bits)>0):
+                        msg_commas += bits
+
+                ### SPACES TAGS
+                msg_spaces = []
+                for line in newhtml3:
+                    bits = retrieve_msg_spaces(line)
+                    if(len(bits)>0):
+                        msg_spaces += bits
 
 
                 # PROXY SIMULATION
@@ -217,7 +228,6 @@ def falseShop(request):
                 if(REMOVE_RANDOM_LINES):
                     modifiedhtml = remove_random_lines(modifiedhtml, NUM_DELETED_LINES)
 
-                print(len(modifiedhtml))
                 # Return modified page
                 htmlresponse = render(request, 'mainPage/indexExpanded.html')
                 htmlresponse.content = modifiedhtml
