@@ -11,9 +11,11 @@ def main():
 
 
     payloadmsg_quotes = "1001100010010110001110011100010100100000001100111001100010010110001110011100010100100000001100111001100010010110001110011100010100100000001100111001100010010110001110011100010100100000001100111001100010010110001110011100010100100000001100111001100010010110001110011100010100100000001100111001100010010110001110011100010100100000001100111001100010010110001110011100010100100000001100111001100010010110001110011100010100100000001100111001100010010110001110011100010100100000001100111001100010010110001110011100010100100000001100111001100010010110001110011100010100100000001100111001100010010110001110011100010100100000001100111001100010010110001110011100010100100000001100111111111101101110101110"
-    print(list(payloadmsg_quotes))
+    backup = payloadmsg_quotes
+    payloadmsg_quotes = list(payloadmsg_quotes)
 
-    with open("./input.html") as fd:
+
+    with open("/home/alexms/Desktop/MASTER/ASIGNATURAS/SEMESTER2/PERSISTENT_THREATS_INFORMATION_LEAKAGE/steganographyLab/TESTS/pythonScripts/input.html") as fd:
         html = fd.read()
 
 
@@ -21,11 +23,11 @@ def main():
     newhtml = []
     for line in html.splitlines():
 
-        newline = insertar_comillas(line, list(payloadmsg_quotes))
+        newline = insertar_comillas(line, payloadmsg_quotes)
         newhtml.append(newline)
 
 
-    print("\n".join(newhtml))
+    # print("\n".join(newhtml))
     ### QUOTATION MARKS
     msg_commas = []
     for line in newhtml:
@@ -33,9 +35,9 @@ def main():
         if(len(bits)>0):
             msg_commas += bits
 
-
+    print(backup)
     print("".join(msg_commas))
-    print(payloadmsg_quotes == "".join(msg_commas))
+    print(backup == "".join(msg_commas))
 
 
 
