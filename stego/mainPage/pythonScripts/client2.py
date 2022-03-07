@@ -1,13 +1,14 @@
 import requests
 import html
 import re
+import sys
+
 from attPosition import decode_line as att_decode_line
 from decodification_commas import retrieve_msg_commas
 from decodification_commas import total_capacity as total_capacity_commas
 from decodification_spaces import retrieve_msg_spaces
 from decodification_spaces import total_capacity as total_capacity_spaces
 from Crypto.Cipher import ARC4
-import sys
 
 
 

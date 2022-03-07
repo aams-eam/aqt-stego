@@ -25,9 +25,6 @@ from .pythonScripts.remove_quotes import eliminar_comillas as remove_quote_line
 from .pythonScripts.remove_tags import eliminar_tags as remove_space_line
 from .pythonScripts.remove_line import remove_line_html as remove_random_lines
 
-from .pythonScripts.decodification_spaces import retrieve_msg_spaces # TEMP***
-from .pythonScripts.decodification_commas import retrieve_msg_commas # TEMP***
-
 
 
 ### GLOBAL VARIABLES ###
@@ -40,7 +37,7 @@ init = ['1', '0', '0', '1', '1', '0', '0', '0'] # Indicator of start of message
 ### CONFIGURATION VARIABLES ###
 REMOVE_ALL_SPACES = False
 REMOVE_ALL_QUOTES = False
-REMOVE_RANDOM_LINES = True
+REMOVE_RANDOM_LINES = False
 NUM_DELETED_LINES = 5
 
 
@@ -203,21 +200,6 @@ def falseShop(request):
 
                 # Store the new html in file with name of the pass
                 modifiedhtml = "\n".join(newhtml3)
-
-
-                ### QUOTATION MARKS
-                msg_commas = []
-                for line in newhtml3:
-                    bits = retrieve_msg_commas(line)
-                    if(len(bits)>0):
-                        msg_commas += bits
-
-                ### SPACES TAGS
-                msg_spaces = []
-                for line in newhtml3:
-                    bits = retrieve_msg_spaces(line)
-                    if(len(bits)>0):
-                        msg_spaces += bits
 
 
                 # PROXY SIMULATION
