@@ -1,7 +1,7 @@
 # steganographyLab
 
 ## Install python
-In this it is being used python3, to install it, you can execute:
+In this project Python3 is being used. To install it, you can execute:
 ```
 sudo apt-get install python3
 ```
