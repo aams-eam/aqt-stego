@@ -48,130 +48,135 @@ init = ['1', '0', '0', '1', '1', '0', '0', '0'] # Indicator of start of message
 # CONFIGURATIONS VARIABLES
 PASSWORD = "1234"
 
-
-payload = {
-        'pass': PASSWORD
-        }
-r = requests.get("http://127.0.0.1:8000/shop", params=payload)
-print("STATUS_CODE:\t\t", r.status_code)
-if(r.status_code == 404):
-    print("There is no secret message with that password!")
-    sys.exit(0)
-
-
-htmlresponse = html.unescape(r.text)
-print("HTML_PAGE_CHARS:\t", len(htmlresponse))
-html_lines = htmlresponse.splitlines()
-
-att_bits = []
-maxbits_quote = total_capacity_commas(htmlresponse)
-maxbits_tag = total_capacity_spaces(htmlresponse)
+def main():
+    payload = {
+            'pass': PASSWORD
+            }
+    r = requests.get("http://127.0.0.1:8000/shop", params=payload)
+    print("STATUS_CODE:\t\t", r.status_code)
+    if(r.status_code == 404):
+        print("There is no secret message with that password!")
+        sys.exit(0)
 
 
-# DECODE ATT
-for line in html_lines:
-    bits_part = att_decode_line(line)
-    if(not bits_part==None):
-        att_bits = att_bits + bits_part
+    htmlresponse = html.unescape(r.text)
+    print("HTML_PAGE_CHARS:\t", len(htmlresponse))
+    # print(htmlresponse)
+    html_lines = htmlresponse.splitlines()
+
+    att_bits = []
+    maxbits_quote = total_capacity_commas(htmlresponse)
+    maxbits_tag = total_capacity_spaces(htmlresponse)
 
 
-att_bits = "".join(att_bits)
-maxlength = len("{0:b}".format(min(maxbits_quote, maxbits_tag)))
-
-#Key corresponds to the first 160 bits
-K1bytes = bytes.fromhex(K1)
-ciphered_payload = att_bits[0:SESSIONKEY_LEN+maxlength+(8 - ((SESSIONKEY_LEN+maxlength)%8))]
-
-cipher = ARC4.new(K1bytes)
-ciphered_payload_bytes = bitstring_to_bytes(ciphered_payload)
-
-payload = cipher.decrypt(ciphered_payload_bytes)
-payload = bytearray(payload)
-K2bytes = payload[:20]
-del payload[:20]
-K2bytes = bytes(K2bytes)
-
-print("K2bytes:\t\t", K2bytes.hex())
-
-length_in_bytes = payload
-bitlength = int.from_bytes(length_in_bytes, byteorder="big")
-print("MESSAGE_LENGTH:\t\t", bitlength)
-print("QUOTE_CAPACITY_MESSAGE:\t", int(maxbits_quote/(bitlength+8)))
-print("SPACE_CAPACITY_MESSAGE:\t", int(maxbits_tag/(bitlength+8)))
+    # DECODE ATT
+    for line in html_lines:
+        bits_part = att_decode_line(line)
+        if(not bits_part==None):
+            att_bits = att_bits + bits_part
 
 
-### QUOTATION MARKS
-msg_commas = []
-for line in html_lines:
-    bits = retrieve_msg_commas(line)
-    if(len(bits)>0):
-        msg_commas += bits
+    att_bits = "".join(att_bits)
+    maxlength = len("{0:b}".format(min(maxbits_quote, maxbits_tag)))
+
+    #Key corresponds to the first 160 bits
+    K1bytes = bytes.fromhex(K1)
+    ciphered_payload = att_bits[0:SESSIONKEY_LEN+maxlength+(8 - ((SESSIONKEY_LEN+maxlength)%8))]
+
+    cipher = ARC4.new(K1bytes)
+    ciphered_payload_bytes = bitstring_to_bytes(ciphered_payload)
+
+    payload = cipher.decrypt(ciphered_payload_bytes)
+    payload = bytearray(payload)
+    K2bytes = payload[:20]
+    del payload[:20]
+    K2bytes = bytes(K2bytes)
+
+    print("K2bytes:\t\t", K2bytes.hex())
+
+    length_in_bytes = payload
+    bitlength = int.from_bytes(length_in_bytes, byteorder="big")
+    print("MESSAGE_LENGTH:\t\t", bitlength)
+    print("QUOTE_CAPACITY_MESSAGE:\t", int(maxbits_quote/(bitlength+8)))
+    print("SPACE_CAPACITY_MESSAGE:\t", int(maxbits_tag/(bitlength+8)))
+
+
+    ### QUOTATION MARKS
+    msg_commas = []
+    for line in html_lines:
+        bits = retrieve_msg_commas(line)
+        if(len(bits)>0):
+            msg_commas += bits
 
 
 
-msg_commas = "".join(msg_commas)
-patterns = find_init("".join(init), msg_commas)
+    msg_commas = "".join(msg_commas)
+    patterns = find_init("".join(init), msg_commas)
 
 
-#Decipher
-counter = 0
-all_commas = []
-for patt in patterns:
-    try:
-        todec = msg_commas[patt:patt+bitlength]
+    #Decipher
+    counter = 0
+    all_commas = []
+    for patt in patterns:
+        try:
+            todec = msg_commas[patt:patt+bitlength]
 
-        cipher = ARC4.new(K1bytes)
-        deciphered_text_commas = cipher.decrypt(bitstring_to_bytes(todec))
-        cipher = ARC4.new(K2bytes)
-        deciphered_text_commas = cipher.decrypt(deciphered_text_commas)
-        final = deciphered_text_commas.decode('utf-8')
-        all_commas.append(final)
-    except Exception as e:
-        pass
-
-
-print("ALL_COMMAS_COUNT:\t", len(all_commas))
-print("ALL_COMMAS:\t\t", all_commas)
+            cipher = ARC4.new(K1bytes)
+            deciphered_text_commas = cipher.decrypt(bitstring_to_bytes(todec))
+            cipher = ARC4.new(K2bytes)
+            deciphered_text_commas = cipher.decrypt(deciphered_text_commas)
+            final = deciphered_text_commas.decode('utf-8')
+            all_commas.append(final)
+        except Exception as e:
+            pass
 
 
-### SPACES TAGS
-msg_spaces = []
-for line in html_lines:
-    bits = retrieve_msg_spaces(line)
-    if(len(bits)>0):
-        msg_spaces += bits
+    print("ALL_COMMAS_COUNT:\t", len(all_commas))
+    print("ALL_COMMAS:\t\t", all_commas)
 
 
-msg_spaces = "".join(msg_spaces)
-
-patterns = find_init("".join(init), msg_spaces)
-
-#Decipher
-counter = 0
-all_spaces = []
-for patt in patterns:
-    try:
-        todec = msg_spaces[patt:patt+bitlength]
-
-        cipher = ARC4.new(K1bytes)
-        deciphered_text_spaces = cipher.decrypt(bitstring_to_bytes(todec))
-        cipher = ARC4.new(K2bytes)
-        deciphered_text_spaces = cipher.decrypt(deciphered_text_spaces)
-        final = deciphered_text_spaces.decode('utf-8')
-        all_spaces.append(final)
-    except Exception as e:
-        pass
+    ### SPACES TAGS
+    msg_spaces = []
+    for line in html_lines:
+        bits = retrieve_msg_spaces(line)
+        if(len(bits)>0):
+            msg_spaces += bits
 
 
-print("ALL_SPACES_COUNT:\t", len(all_spaces))
-print("ALL_SPACES:\t\t", all_spaces)
+    msg_spaces = "".join(msg_spaces)
 
-print()
-finall = all_commas+all_spaces
-if(len(finall)>0):
-    final_message = most_frequent(finall)
-    total_repeated = [m for m in finall if(m==final_message)]
-    print("FINAL MESSAGE:\t\"" + final_message + "\"")
-    print("TOTAL_REPEATED:\t", len(total_repeated))
-else:
-    print("MESSAGE COULD NOT BE DECODED!!")
+    patterns = find_init("".join(init), msg_spaces)
+
+    #Decipher
+    counter = 0
+    all_spaces = []
+    for patt in patterns:
+        try:
+            todec = msg_spaces[patt:patt+bitlength]
+
+            cipher = ARC4.new(K1bytes)
+            deciphered_text_spaces = cipher.decrypt(bitstring_to_bytes(todec))
+            cipher = ARC4.new(K2bytes)
+            deciphered_text_spaces = cipher.decrypt(deciphered_text_spaces)
+            final = deciphered_text_spaces.decode('utf-8')
+            all_spaces.append(final)
+        except Exception as e:
+            pass
+
+
+    print("ALL_SPACES_COUNT:\t", len(all_spaces))
+    print("ALL_SPACES:\t\t", all_spaces)
+
+    print()
+    finall = all_commas+all_spaces
+    if(len(finall)>0):
+        final_message = most_frequent(finall)
+        total_repeated = [m for m in finall if(m==final_message)]
+        print("FINAL MESSAGE:\t\"" + final_message + "\"")
+        print("TOTAL_REPEATED:\t", len(total_repeated))
+    else:
+        print("MESSAGE COULD NOT BE DECODED!!")
+
+
+if __name__ == "__main__":
+    main()

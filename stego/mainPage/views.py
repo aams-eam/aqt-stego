@@ -40,7 +40,7 @@ init = ['1', '0', '0', '1', '1', '0', '0', '0'] # Indicator of start of message
 ### CONFIGURATION VARIABLES ###
 REMOVE_ALL_SPACES = False
 REMOVE_ALL_QUOTES = False
-REMOVE_RANDOM_LINES = False
+REMOVE_RANDOM_LINES = True
 NUM_DELETED_LINES = 5
 
 
