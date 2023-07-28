@@ -1,4 +1,5 @@
-# steganographyLab
+# aqt-stego
+aqt-stego is a steganography poc that hides messages in html pages by using a combination of attribute, quote, and tag encoding.
 
 ## Install python
 In this project Python3 is being used. To install it, you can execute:
